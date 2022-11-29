@@ -1,7 +1,6 @@
 process: migrate
 	@node -r dotenv/config lib/processor.js
 
-
 build:
 	@npm run build
 
@@ -16,22 +15,17 @@ build-images: build-processor-image build-query-node-image
 serve:
 	@npx squid-graphql-server --subscriptions
 
-
 migrate:
 	@npx squid-typeorm-migration apply
-
 
 codegen:
 	@npx squid-typeorm-codegen
 
-
 typegen:
-	@npx squid-substrate-typegen typegen.json
-
+	@npx squid-substrate-typegen ./typegen/typegen.json
 
 up:
 	@docker-compose up -d
-
 
 down:
 	@docker-compose down

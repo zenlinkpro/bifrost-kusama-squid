@@ -1,0 +1,16 @@
+{
+  "outDir": "../src/types",
+  "specVersions": "https://bifrost.archive.subsquid.io/graphql",
+  "typesBundle": "bifrost",
+  "events": [
+    "Tokens.Transfer",
+    "ZenlinkProtocol.AssetSwap",
+    "ZenlinkProtocol.LiquidityAdded",
+    "ZenlinkProtocol.LiquidityRemoved"
+  ],
+  "calls": [],
+  "storage": [
+    "Balances.Account",
+    "Tokens.Accounts"
+  ]
+}
