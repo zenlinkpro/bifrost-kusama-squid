@@ -3,17 +3,13 @@ import * as ss58 from "@subsquid/ss58"
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { Store, TypeormDatabase } from "@subsquid/typeorm-store"
 import { In } from "typeorm"
+import { config } from "./config"
 import { ZenlinkProtocolAssetSwapEvent } from "./types/events"
+import { ZenlinkProtocolPairStatusesStorage } from "./types/storage"
 
 
 const processor = new SubstrateBatchProcessor()
-  .setDataSource({
-    // Lookup archive by the network name in the Subsquid registry
-    //archive: lookupArchive("bifrost", {release: "FireSquid"})
-
-    // Use archive created by archive/docker-compose.yml
-    archive: lookupArchive('bifrost', { release: 'FireSquid' })
-  })
+  .setDataSource(config.dataSource)
   .addEvent('ZenlinkProtocol.AssetSwap', {
     data: {
       event: {
@@ -40,7 +36,17 @@ processor.run(new TypeormDatabase(), async ctx => {
         if (e.isV902) {
           console.log(block.header.height, e.asV902)
         } else {
-          console.log(block.header.height, e.asV906)
+          const events = e.asV906
+          const storage = new ZenlinkProtocolPairStatusesStorage(ctx, block.header)
+          const result = await storage.getAllAsV906()
+          console.log(
+            block.header.height, 
+            ss58.codec(config.prefix).encode(events[0]),
+            ss58.codec(config.prefix).encode(events[1]),
+            events[2],
+            events[3].map(v => v.toString())
+          )
+          console.log('result', result)
         }
       }
     }
