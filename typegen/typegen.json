@@ -10,7 +10,8 @@
   ],
   "calls": [],
   "storage": [
-    "Balances.Account",
-    "Tokens.Accounts"
+    "System.Account",
+    "Tokens.Accounts",
+    "ZenlinkProtocol.PairStatuses"
   ]
 }

@@ -2,6 +2,7 @@ import assert from 'assert'
 import {Block, Chain, ChainContext, BlockContext, Result, Option} from './support'
 import * as v1 from './v1'
 import * as v802 from './v802'
+import * as v902 from './v902'
 import * as v906 from './v906'
 import * as v916 from './v916'
 import * as v920 from './v920'
@@ -9,7 +10,7 @@ import * as v932 from './v932'
 import * as v956 from './v956'
 import * as v962 from './v962'
 
-export class BalancesAccountStorage {
+export class SystemAccountStorage {
     private readonly _chain: Chain
     private readonly blockHash: string
 
@@ -22,39 +23,35 @@ export class BalancesAccountStorage {
     }
 
     /**
-     *  The balance of an account.
-     * 
-     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     *  The full account information for a particular account ID.
      */
     get isV1() {
-        return this._chain.getStorageItemTypeHash('Balances', 'Account') === '0b3b4bf0dd7388459eba461bc7c3226bf58608c941710a714e02f33ec0f91e78'
+        return this._chain.getStorageItemTypeHash('System', 'Account') === '1ddc7ade926221442c388ee4405a71c9428e548fab037445aaf4b3a78f4735c1'
     }
 
     /**
-     *  The balance of an account.
-     * 
-     *  NOTE: This is only used in the case that this pallet is used to store balances.
+     *  The full account information for a particular account ID.
      */
-    async getAsV1(key: Uint8Array): Promise<v1.AccountData> {
+    async getAsV1(key: Uint8Array): Promise<v1.AccountInfo> {
         assert(this.isV1)
-        return this._chain.getStorage(this.blockHash, 'Balances', 'Account', key)
+        return this._chain.getStorage(this.blockHash, 'System', 'Account', key)
     }
 
-    async getManyAsV1(keys: Uint8Array[]): Promise<(v1.AccountData)[]> {
+    async getManyAsV1(keys: Uint8Array[]): Promise<(v1.AccountInfo)[]> {
         assert(this.isV1)
-        return this._chain.queryStorage(this.blockHash, 'Balances', 'Account', keys.map(k => [k]))
+        return this._chain.queryStorage(this.blockHash, 'System', 'Account', keys.map(k => [k]))
     }
 
-    async getAllAsV1(): Promise<(v1.AccountData)[]> {
+    async getAllAsV1(): Promise<(v1.AccountInfo)[]> {
         assert(this.isV1)
-        return this._chain.queryStorage(this.blockHash, 'Balances', 'Account')
+        return this._chain.queryStorage(this.blockHash, 'System', 'Account')
     }
 
     /**
      * Checks whether the storage item is defined for the current chain version.
      */
     get isExists(): boolean {
-        return this._chain.getStorageItemTypeHash('Balances', 'Account') != null
+        return this._chain.getStorageItemTypeHash('System', 'Account') != null
     }
 }
 
@@ -320,5 +317,75 @@ export class TokensAccountsStorage {
      */
     get isExists(): boolean {
         return this._chain.getStorageItemTypeHash('Tokens', 'Accounts') != null
+    }
+}
+
+export class ZenlinkProtocolPairStatusesStorage {
+    private readonly _chain: Chain
+    private readonly blockHash: string
+
+    constructor(ctx: BlockContext)
+    constructor(ctx: ChainContext, block: Block)
+    constructor(ctx: BlockContext, block?: Block) {
+        block = block || ctx.block
+        this.blockHash = block.hash
+        this._chain = ctx._chain
+    }
+
+    /**
+     *  (AssetId, AssetId) -> PairStatus
+     */
+    get isV902() {
+        return this._chain.getStorageItemTypeHash('ZenlinkProtocol', 'PairStatuses') === '2faae79f4ae95d419833b1d0471ee60a503e09075a12d9ccba4e2fec7b728d75'
+    }
+
+    /**
+     *  (AssetId, AssetId) -> PairStatus
+     */
+    async getAsV902(key: [number, number]): Promise<v902.PairStatus> {
+        assert(this.isV902)
+        return this._chain.getStorage(this.blockHash, 'ZenlinkProtocol', 'PairStatuses', key)
+    }
+
+    async getManyAsV902(keys: [number, number][]): Promise<(v902.PairStatus)[]> {
+        assert(this.isV902)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'PairStatuses', keys.map(k => [k]))
+    }
+
+    async getAllAsV902(): Promise<(v902.PairStatus)[]> {
+        assert(this.isV902)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'PairStatuses')
+    }
+
+    /**
+     *  (AssetId, AssetId) -> PairStatus
+     */
+    get isV906() {
+        return this._chain.getStorageItemTypeHash('ZenlinkProtocol', 'PairStatuses') === 'bad89eddde62d5d40bc938d63d2495e173228abf7011695d72c252612979bde7'
+    }
+
+    /**
+     *  (AssetId, AssetId) -> PairStatus
+     */
+    async getAsV906(key: [v906.AssetId, v906.AssetId]): Promise<v906.PairStatus> {
+        assert(this.isV906)
+        return this._chain.getStorage(this.blockHash, 'ZenlinkProtocol', 'PairStatuses', key)
+    }
+
+    async getManyAsV906(keys: [v906.AssetId, v906.AssetId][]): Promise<(v906.PairStatus)[]> {
+        assert(this.isV906)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'PairStatuses', keys.map(k => [k]))
+    }
+
+    async getAllAsV906(): Promise<(v906.PairStatus)[]> {
+        assert(this.isV906)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'PairStatuses')
+    }
+
+    /**
+     * Checks whether the storage item is defined for the current chain version.
+     */
+    get isExists(): boolean {
+        return this._chain.getStorageItemTypeHash('ZenlinkProtocol', 'PairStatuses') != null
     }
 }

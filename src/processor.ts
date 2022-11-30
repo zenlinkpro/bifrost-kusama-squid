@@ -3,28 +3,28 @@ import * as ss58 from "@subsquid/ss58"
 import { BatchContext, BatchProcessorItem, SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { Store, TypeormDatabase } from "@subsquid/typeorm-store"
 import { In } from "typeorm"
-import { Account, Transfer } from "./model"
+import { ZenlinkProtocolAssetSwapEvent } from "./types/events"
 
 
 const processor = new SubstrateBatchProcessor()
-    .setDataSource({
-        // Lookup archive by the network name in the Subsquid registry
-        //archive: lookupArchive("bifrost", {release: "FireSquid"})
+  .setDataSource({
+    // Lookup archive by the network name in the Subsquid registry
+    //archive: lookupArchive("bifrost", {release: "FireSquid"})
 
-        // Use archive created by archive/docker-compose.yml
-        archive: lookupArchive('bifrost', { release: 'FireSquid' })
-    })
-    .addEvent('Balances.Transfer', {
-        data: {
-            event: {
-                args: true,
-                extrinsic: {
-                    hash: true,
-                    fee: true
-                }
-            }
+    // Use archive created by archive/docker-compose.yml
+    archive: lookupArchive('bifrost', { release: 'FireSquid' })
+  })
+  .addEvent('ZenlinkProtocol.AssetSwap', {
+    data: {
+      event: {
+        args: true,
+        extrinsic: {
+          hash: true,
+          fee: true
         }
-    } as const)
+      }
+    }
+  } as const)
 
 
 type Item = BatchProcessorItem<typeof processor>
@@ -32,6 +32,18 @@ type Ctx = BatchContext<Store, Item>
 
 
 processor.run(new TypeormDatabase(), async ctx => {
-
+  console.log('blocks', ctx.blocks.length)
+  for (let block of ctx.blocks) {
+    for (let item of block.items) {
+      if (item.name == 'ZenlinkProtocol.AssetSwap') {
+        const e = new ZenlinkProtocolAssetSwapEvent(ctx, item.event)
+        if (e.isV902) {
+          console.log(block.header.height, e.asV902)
+        } else {
+          console.log(block.header.height, e.asV906)
+        }
+      }
+    }
+  }
 })
 
