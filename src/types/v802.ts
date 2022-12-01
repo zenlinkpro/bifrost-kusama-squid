@@ -1,5 +1,42 @@
 import type {Result, Option} from './support'
 
+export type Currency = Currency_Native | Currency_VToken | Currency_Token | Currency_Stable | Currency_VSToken | Currency_VSBond | Currency_LPToken
+
+export interface Currency_Native {
+    __kind: 'Native'
+    value: TokenSymbol
+}
+
+export interface Currency_VToken {
+    __kind: 'VToken'
+    value: TokenSymbol
+}
+
+export interface Currency_Token {
+    __kind: 'Token'
+    value: TokenSymbol
+}
+
+export interface Currency_Stable {
+    __kind: 'Stable'
+    value: TokenSymbol
+}
+
+export interface Currency_VSToken {
+    __kind: 'VSToken'
+    value: TokenSymbol
+}
+
+export interface Currency_VSBond {
+    __kind: 'VSBond'
+    value: [TokenSymbol, number, number, number]
+}
+
+export interface Currency_LPToken {
+    __kind: 'LPToken'
+    value: [TokenSymbol, number, TokenSymbol, number]
+}
+
 export type CurrencyId = CurrencyId_Native | CurrencyId_VToken | CurrencyId_Token | CurrencyId_Stable | CurrencyId_VSToken | CurrencyId_VSBond | CurrencyId_LPToken
 
 export interface CurrencyId_Native {

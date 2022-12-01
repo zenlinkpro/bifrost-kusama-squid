@@ -1,6 +1,9 @@
 import { EventHandlerContext } from "../types";
-import { ZenlinkProtocolLiquidityPairsStorage } from "../types/storage";
+import { ZenlinkProtocolLiquidityPairsStorage, ZenlinkProtocolPairStatusesStorage } from "../types/storage";
 import { AssetId } from "../types/v906";
+import { codec } from '@subsquid/ss58'
+import { config } from "../config";
+import { invert } from 'lodash'
 
 export const currencyKeyMap: { [index: number]: string } = {
   0: 'Native',
@@ -39,6 +42,8 @@ export const currencyTokenSymbolMap: { [index: number]: string } = {
   9: 'RMRK',
   10: 'MOVR'
 };
+
+export const invertedTokenSymbolMap = invert(currencyTokenSymbolMap)
 
 export function addressFromAsset({ chainId, assetIndex, assetType }: AssetId) {
   return `${chainId}-${assetType}-${assetIndex.toString()}`
@@ -91,6 +96,12 @@ export function s2u8a(str: string) {
   return new Uint8Array(arr);
 }
 
+export function parseToTokenIndex(type: number, index: number): number {
+  if (type === 0) return 0;
+
+  return (type << 8) + index;
+}
+
 const pairAssetIds = new Map<string, AssetId>()
 
 export async function getPairAssetIdFromAssets(
@@ -106,10 +117,40 @@ export async function getPairAssetIdFromAssets(
     pairAssetId = pairAssetIds.get(assetsId)
   } else {
     const pairsStorage = new ZenlinkProtocolLiquidityPairsStorage(ctx, ctx.block)
-    pairAssetId = await pairsStorage.getAsV906([asset0, asset1])
+    if (!pairsStorage.isExists) return undefined
+    pairAssetId = await pairsStorage.getAsV906(assets)
     if (pairAssetId) {
       pairAssetIds.set(assetsId, pairAssetId)
     }
   }
   return pairAssetId
+}
+
+const pairAccounts = new Map<string, string>()
+
+export async function getPairStatusFromAssets(
+  ctx: EventHandlerContext,
+  assets: [AssetId, AssetId],
+  onlyAccount = true
+): Promise<[string | undefined, BigInt]> {
+  const [asset0, asset1] = assets
+  const token0Address = addressFromAsset(asset0)
+  const token1Address = addressFromAsset(asset1)
+  const assetsId = `${token0Address}-${token1Address}`
+  let pairAccount: string | undefined
+  if (pairAccounts.has(assetsId) && onlyAccount) {
+    pairAccount = pairAccounts.get(assetsId)
+    return [pairAccount!, BigInt(0)]
+  } else {
+    const statusStorage = new ZenlinkProtocolPairStatusesStorage(ctx, ctx.block)
+    if (!statusStorage.isExists) return [undefined, BigInt(0)]
+    const result = await statusStorage.getAsV906(assets)
+    if (result.__kind === 'Trading') {
+      pairAccount = codec(config.prefix).encode(result.value.pairAccount)
+      pairAccounts.set(assetsId, pairAccount)
+      return [pairAccount, result.value.totalSupply]
+    }
+
+    return [undefined, BigInt(0)]
+  }
 }

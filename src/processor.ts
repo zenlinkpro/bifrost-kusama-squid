@@ -2,46 +2,46 @@ import { SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { TypeormDatabase } from "@subsquid/typeorm-store"
 import { config } from "./config"
 import { handleLiquidityAdded } from './mappings/protocol'
+import { handleTokenDeposited, handleTokenWithdrawn } from "./mappings/token"
+import { TOEKN_EVENT_TYPE } from "./types"
 
 const DataSelection = { data: { event: true } } as const
 
 const processor = new SubstrateBatchProcessor()
   .setDataSource(config.dataSource)
-  .setBlockRange({ from: 2800000 })
+  .setBlockRange({ from: 907128 })
+  .addEvent('Currencies.Transfer', DataSelection)
+  .addEvent('Currencies.Deposited', DataSelection)
+  .addEvent('Currencies.Withdrawn', DataSelection)
+  .addEvent('Tokens.Transfer', DataSelection)
+  .addEvent('Tokens.Deposited', DataSelection)
+  .addEvent('Tokens.Withdrawn', DataSelection)
   .addEvent('ZenlinkProtocol.LiquidityAdded', DataSelection)
   .addEvent('ZenlinkProtocol.LiquidityRemoved', DataSelection)
   .addEvent('ZenlinkProtocol.AssetSwap', DataSelection)
-  .addEvent('Tokens.Transfer', DataSelection)
 
 processor.run(new TypeormDatabase(), async ctx => {
   for (let block of ctx.blocks) {
     for (let item of block.items) {
       switch (item.name) {
+        case 'Currencies.Deposited':
+          await handleTokenDeposited({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Currencies)
+          break
+        case 'Currencies.Withdrawn':
+          await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Currencies)
+          break
+        case 'Tokens.Deposited':
+          await handleTokenDeposited({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
+          break
+        case 'Tokens.Withdrawn':
+          await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
+          break
         case 'ZenlinkProtocol.LiquidityAdded':
           await handleLiquidityAdded({ ...ctx, block: block.header, event: item.event })
           break
         default:
           break
       }
-
-      // if (item.name == 'ZenlinkProtocol.AssetSwap') {
-      //   const e = new ZenlinkProtocolAssetSwapEvent(ctx, item.event)
-      //   if (e.isV902) {
-      //     console.log(block.header.height, e.asV902)
-      //   } else {
-      //     const events = e.asV906
-      //     const storage = new ZenlinkProtocolPairStatusesStorage(ctx, block.header)
-      //     const result = await storage.getAllAsV906()
-      //     console.log(
-      //       block.header.height,
-      //       ss58.codec(config.prefix).encode(events[0]),
-      //       ss58.codec(config.prefix).encode(events[1]),
-      //       events[2],
-      //       events[3].map(v => v.toString())
-      //     )
-      //     console.log('result', result)
-      //   }
-      // }
     }
   }
 })

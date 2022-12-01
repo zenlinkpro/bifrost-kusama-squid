@@ -23,3 +23,8 @@ export interface TokenBase {
   symbol: string
   decimals: number
 }
+
+export enum TOEKN_EVENT_TYPE {
+  Currencies,
+  Tokens
+}

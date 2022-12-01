@@ -1,5 +1,5 @@
 import { TOKEN_METADATA_MAP, ZERO_BD } from "../constants";
-import { Token } from "../model/generated/token.model";
+import { Token } from "../model";
 import { EventHandlerContext } from "../types";
 import { AssetRegistryCurrencyMetadatasStorage } from "../types/storage";
 import { AssetId } from "../types/v906";

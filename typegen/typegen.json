@@ -3,7 +3,12 @@
   "specVersions": "https://bifrost.archive.subsquid.io/graphql",
   "typesBundle": "bifrost",
   "events": [
+    "Currencies.Transferred",
+    "Currencies.Deposited",
+    "Currencies.Withdrawn",
     "Tokens.Transfer",
+    "Tokens.Deposited",
+    "Tokens.Withdrawn",
     "ZenlinkProtocol.AssetSwap",
     "ZenlinkProtocol.LiquidityAdded",
     "ZenlinkProtocol.LiquidityRemoved"
