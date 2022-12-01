@@ -10,6 +10,84 @@ import * as v932 from './v932'
 import * as v956 from './v956'
 import * as v962 from './v962'
 
+export class AssetRegistryCurrencyMetadatasStorage {
+    private readonly _chain: Chain
+    private readonly blockHash: string
+
+    constructor(ctx: BlockContext)
+    constructor(ctx: ChainContext, block: Block)
+    constructor(ctx: BlockContext, block?: Block) {
+        block = block || ctx.block
+        this.blockHash = block.hash
+        this._chain = ctx._chain
+    }
+
+    /**
+     *  The storages for AssetMetadata.
+     * 
+     *  CurrencyMetadatas: map CurrencyId => Option<AssetMetadata>
+     */
+    get isV956() {
+        return this._chain.getStorageItemTypeHash('AssetRegistry', 'CurrencyMetadatas') === 'e08bc4f3aa66be2b3c650bc88441394e425e6447384c7f6022be4cc6f0185f8c'
+    }
+
+    /**
+     *  The storages for AssetMetadata.
+     * 
+     *  CurrencyMetadatas: map CurrencyId => Option<AssetMetadata>
+     */
+    async getAsV956(key: v956.CurrencyId): Promise<v956.AssetMetadata | undefined> {
+        assert(this.isV956)
+        return this._chain.getStorage(this.blockHash, 'AssetRegistry', 'CurrencyMetadatas', key)
+    }
+
+    async getManyAsV956(keys: v956.CurrencyId[]): Promise<(v956.AssetMetadata | undefined)[]> {
+        assert(this.isV956)
+        return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'CurrencyMetadatas', keys.map(k => [k]))
+    }
+
+    async getAllAsV956(): Promise<(v956.AssetMetadata)[]> {
+        assert(this.isV956)
+        return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'CurrencyMetadatas')
+    }
+
+    /**
+     *  The storages for AssetMetadata.
+     * 
+     *  CurrencyMetadatas: map CurrencyId => Option<AssetMetadata>
+     */
+    get isV962() {
+        return this._chain.getStorageItemTypeHash('AssetRegistry', 'CurrencyMetadatas') === '9119afad27c100216eed976bb02714bc032591d19a759cdbc209d5dc868aa7b2'
+    }
+
+    /**
+     *  The storages for AssetMetadata.
+     * 
+     *  CurrencyMetadatas: map CurrencyId => Option<AssetMetadata>
+     */
+    async getAsV962(key: v962.CurrencyId): Promise<v962.AssetMetadata | undefined> {
+        assert(this.isV962)
+        return this._chain.getStorage(this.blockHash, 'AssetRegistry', 'CurrencyMetadatas', key)
+    }
+
+    async getManyAsV962(keys: v962.CurrencyId[]): Promise<(v962.AssetMetadata | undefined)[]> {
+        assert(this.isV962)
+        return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'CurrencyMetadatas', keys.map(k => [k]))
+    }
+
+    async getAllAsV962(): Promise<(v962.AssetMetadata)[]> {
+        assert(this.isV962)
+        return this._chain.queryStorage(this.blockHash, 'AssetRegistry', 'CurrencyMetadatas')
+    }
+
+    /**
+     * Checks whether the storage item is defined for the current chain version.
+     */
+    get isExists(): boolean {
+        return this._chain.getStorageItemTypeHash('AssetRegistry', 'CurrencyMetadatas') != null
+    }
+}
+
 export class SystemAccountStorage {
     private readonly _chain: Chain
     private readonly blockHash: string
@@ -317,6 +395,64 @@ export class TokensAccountsStorage {
      */
     get isExists(): boolean {
         return this._chain.getStorageItemTypeHash('Tokens', 'Accounts') != null
+    }
+}
+
+export class ZenlinkProtocolLiquidityPairsStorage {
+    private readonly _chain: Chain
+    private readonly blockHash: string
+
+    constructor(ctx: BlockContext)
+    constructor(ctx: ChainContext, block: Block)
+    constructor(ctx: BlockContext, block?: Block) {
+        block = block || ctx.block
+        this.blockHash = block.hash
+        this._chain = ctx._chain
+    }
+
+    get isV902() {
+        return this._chain.getStorageItemTypeHash('ZenlinkProtocol', 'LiquidityPairs') === 'e95fb5126bd8e5d9a624a5075b31639743d7dfb5262de60578b320acf59ce453'
+    }
+
+    async getAsV902(key: [number, number]): Promise<(number | undefined)> {
+        assert(this.isV902)
+        return this._chain.getStorage(this.blockHash, 'ZenlinkProtocol', 'LiquidityPairs', key)
+    }
+
+    async getManyAsV902(keys: [number, number][]): Promise<((number | undefined))[]> {
+        assert(this.isV902)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'LiquidityPairs', keys.map(k => [k]))
+    }
+
+    async getAllAsV902(): Promise<((number | undefined))[]> {
+        assert(this.isV902)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'LiquidityPairs')
+    }
+
+    get isV906() {
+        return this._chain.getStorageItemTypeHash('ZenlinkProtocol', 'LiquidityPairs') === '789cf3f60e0a697e380821675a1d5385e419abba09e35755b95a3eb7b5a28f1f'
+    }
+
+    async getAsV906(key: [v906.AssetId, v906.AssetId]): Promise<(v906.AssetId | undefined)> {
+        assert(this.isV906)
+        return this._chain.getStorage(this.blockHash, 'ZenlinkProtocol', 'LiquidityPairs', key)
+    }
+
+    async getManyAsV906(keys: [v906.AssetId, v906.AssetId][]): Promise<((v906.AssetId | undefined))[]> {
+        assert(this.isV906)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'LiquidityPairs', keys.map(k => [k]))
+    }
+
+    async getAllAsV906(): Promise<((v906.AssetId | undefined))[]> {
+        assert(this.isV906)
+        return this._chain.queryStorage(this.blockHash, 'ZenlinkProtocol', 'LiquidityPairs')
+    }
+
+    /**
+     * Checks whether the storage item is defined for the current chain version.
+     */
+    get isExists(): boolean {
+        return this._chain.getStorageItemTypeHash('ZenlinkProtocol', 'LiquidityPairs') != null
     }
 }
 

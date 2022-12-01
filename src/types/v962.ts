@@ -67,6 +67,13 @@ export interface CurrencyId_StableLpToken {
     value: number
 }
 
+export interface AssetMetadata {
+    name: Uint8Array
+    symbol: Uint8Array
+    decimals: number
+    minimalBalance: bigint
+}
+
 export interface Type_591 {
     free: bigint
     reserved: bigint

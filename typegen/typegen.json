@@ -10,8 +10,10 @@
   ],
   "calls": [],
   "storage": [
+    "AssetRegistry.CurrencyMetadatas",
     "System.Account",
     "Tokens.Accounts",
-    "ZenlinkProtocol.PairStatuses"
+    "ZenlinkProtocol.PairStatuses",
+    "ZenlinkProtocol.LiquidityPairs"
   ]
 }

@@ -62,6 +62,13 @@ export interface CurrencyId_VSBond2 {
     value: [number, number, number, number]
 }
 
+export interface AssetMetadata {
+    name: Uint8Array
+    symbol: Uint8Array
+    decimals: number
+    minimalBalance: bigint
+}
+
 export interface Type_568 {
     free: bigint
     reserved: bigint
