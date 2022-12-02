@@ -17,7 +17,9 @@
   "storage": [
     "AssetRegistry.CurrencyMetadatas",
     "System.Account",
+    "Balances.TotalIssuance",
     "Tokens.Accounts",
+    "Tokens.TotalIssuance",
     "ZenlinkProtocol.PairStatuses",
     "ZenlinkProtocol.LiquidityPairs"
   ]

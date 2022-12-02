@@ -88,6 +88,41 @@ export class AssetRegistryCurrencyMetadatasStorage {
     }
 }
 
+export class BalancesTotalIssuanceStorage {
+    private readonly _chain: Chain
+    private readonly blockHash: string
+
+    constructor(ctx: BlockContext)
+    constructor(ctx: ChainContext, block: Block)
+    constructor(ctx: BlockContext, block?: Block) {
+        block = block || ctx.block
+        this.blockHash = block.hash
+        this._chain = ctx._chain
+    }
+
+    /**
+     *  The total units issued in the system.
+     */
+    get isV1() {
+        return this._chain.getStorageItemTypeHash('Balances', 'TotalIssuance') === 'f8ebe28eb30158172c0ccf672f7747c46a244f892d08ef2ebcbaadde34a26bc0'
+    }
+
+    /**
+     *  The total units issued in the system.
+     */
+    async getAsV1(): Promise<bigint> {
+        assert(this.isV1)
+        return this._chain.getStorage(this.blockHash, 'Balances', 'TotalIssuance')
+    }
+
+    /**
+     * Checks whether the storage item is defined for the current chain version.
+     */
+    get isExists(): boolean {
+        return this._chain.getStorageItemTypeHash('Balances', 'TotalIssuance') != null
+    }
+}
+
 export class SystemAccountStorage {
     private readonly _chain: Chain
     private readonly blockHash: string
@@ -395,6 +430,201 @@ export class TokensAccountsStorage {
      */
     get isExists(): boolean {
         return this._chain.getStorageItemTypeHash('Tokens', 'Accounts') != null
+    }
+}
+
+export class TokensTotalIssuanceStorage {
+    private readonly _chain: Chain
+    private readonly blockHash: string
+
+    constructor(ctx: BlockContext)
+    constructor(ctx: ChainContext, block: Block)
+    constructor(ctx: BlockContext, block?: Block) {
+        block = block || ctx.block
+        this.blockHash = block.hash
+        this._chain = ctx._chain
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV802() {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') === '4485e1de640ba6d5644bccfa5de05d1fda969c5acf14643aaaa0e5902011be6f'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    async getAsV802(key: v802.CurrencyId): Promise<bigint> {
+        assert(this.isV802)
+        return this._chain.getStorage(this.blockHash, 'Tokens', 'TotalIssuance', key)
+    }
+
+    async getManyAsV802(keys: v802.CurrencyId[]): Promise<(bigint)[]> {
+        assert(this.isV802)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance', keys.map(k => [k]))
+    }
+
+    async getAllAsV802(): Promise<(bigint)[]> {
+        assert(this.isV802)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance')
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV906() {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') === 'bc7ace11b9acb0503943c179b0df6b087fe54378a529b00bc4d74e91a92b8d20'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    async getAsV906(key: v906.CurrencyId): Promise<bigint> {
+        assert(this.isV906)
+        return this._chain.getStorage(this.blockHash, 'Tokens', 'TotalIssuance', key)
+    }
+
+    async getManyAsV906(keys: v906.CurrencyId[]): Promise<(bigint)[]> {
+        assert(this.isV906)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance', keys.map(k => [k]))
+    }
+
+    async getAllAsV906(): Promise<(bigint)[]> {
+        assert(this.isV906)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance')
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV916() {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') === '0c4cf2796fe05257005182b83584d3bc188cf7115e54343b6eed66117bdc03a7'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    async getAsV916(key: v916.CurrencyId): Promise<bigint> {
+        assert(this.isV916)
+        return this._chain.getStorage(this.blockHash, 'Tokens', 'TotalIssuance', key)
+    }
+
+    async getManyAsV916(keys: v916.CurrencyId[]): Promise<(bigint)[]> {
+        assert(this.isV916)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance', keys.map(k => [k]))
+    }
+
+    async getAllAsV916(): Promise<(bigint)[]> {
+        assert(this.isV916)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance')
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV920() {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') === '007e17879f51eca619124318e9c48246b55feb1399b77cf08bc5d6e6dfee39db'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    async getAsV920(key: v920.CurrencyId): Promise<bigint> {
+        assert(this.isV920)
+        return this._chain.getStorage(this.blockHash, 'Tokens', 'TotalIssuance', key)
+    }
+
+    async getManyAsV920(keys: v920.CurrencyId[]): Promise<(bigint)[]> {
+        assert(this.isV920)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance', keys.map(k => [k]))
+    }
+
+    async getAllAsV920(): Promise<(bigint)[]> {
+        assert(this.isV920)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance')
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV932() {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') === '882212a0ba28258088066051bf9e56c0767f43777f841fe4f85a0848b73f1ea4'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    async getAsV932(key: v932.CurrencyId): Promise<bigint> {
+        assert(this.isV932)
+        return this._chain.getStorage(this.blockHash, 'Tokens', 'TotalIssuance', key)
+    }
+
+    async getManyAsV932(keys: v932.CurrencyId[]): Promise<(bigint)[]> {
+        assert(this.isV932)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance', keys.map(k => [k]))
+    }
+
+    async getAllAsV932(): Promise<(bigint)[]> {
+        assert(this.isV932)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance')
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV956() {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') === '4c39b9bae716dbe5a3072da27c59dffcdf999bdf64e2e4128f5e6038396d4a03'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    async getAsV956(key: v956.CurrencyId): Promise<bigint> {
+        assert(this.isV956)
+        return this._chain.getStorage(this.blockHash, 'Tokens', 'TotalIssuance', key)
+    }
+
+    async getManyAsV956(keys: v956.CurrencyId[]): Promise<(bigint)[]> {
+        assert(this.isV956)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance', keys.map(k => [k]))
+    }
+
+    async getAllAsV956(): Promise<(bigint)[]> {
+        assert(this.isV956)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance')
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV962() {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') === '90285da57e7305354cef41c507a8403919ee1ccfad0a423e082e82bb7abe002a'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    async getAsV962(key: v962.CurrencyId): Promise<bigint> {
+        assert(this.isV962)
+        return this._chain.getStorage(this.blockHash, 'Tokens', 'TotalIssuance', key)
+    }
+
+    async getManyAsV962(keys: v962.CurrencyId[]): Promise<(bigint)[]> {
+        assert(this.isV962)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance', keys.map(k => [k]))
+    }
+
+    async getAllAsV962(): Promise<(bigint)[]> {
+        assert(this.isV962)
+        return this._chain.queryStorage(this.blockHash, 'Tokens', 'TotalIssuance')
+    }
+
+    /**
+     * Checks whether the storage item is defined for the current chain version.
+     */
+    get isExists(): boolean {
+        return this._chain.getStorageItemTypeHash('Tokens', 'TotalIssuance') != null
     }
 }
 
