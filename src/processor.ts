@@ -1,7 +1,7 @@
 import { SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { TypeormDatabase } from "@subsquid/typeorm-store"
 import { config } from "./config"
-import { handleLiquidityAdded } from './mappings/protocol'
+import { handleAssetSwap, handleLiquidityAdded, handleLiquidityRemoved } from './mappings/protocol'
 import { handleTokenDeposited, handleTokenTransfer, handleTokenWithdrawn } from "./mappings/token"
 import { TOEKN_EVENT_TYPE } from "./types"
 
@@ -44,6 +44,12 @@ processor.run(new TypeormDatabase(), async ctx => {
           break
         case 'ZenlinkProtocol.LiquidityAdded':
           await handleLiquidityAdded({ ...ctx, block: block.header, event: item.event })
+          break
+        case 'ZenlinkProtocol.LiquidityRemoved':
+          await handleLiquidityRemoved({ ...ctx, block: block.header, event: item.event })
+          break
+        case 'ZenlinkProtocol.AssetSwap':
+          await handleAssetSwap({ ...ctx, block: block.header, event: item.event })
           break
         default:
           break

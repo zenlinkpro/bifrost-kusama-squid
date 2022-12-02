@@ -8,10 +8,12 @@ import {
   PairHourData, 
   Token, 
   TokenDayData, 
-  ZenlinkDayInfo 
+  ZenlinkDayInfo, 
+  ZenlinkInfo
 } from "../model";
 import { EventHandlerContext } from "../types";
 import { Big as BigDecimal } from 'big.js'
+import { getZenlinkInfo } from "../entities/utils";
 
 export async function updateFactoryDayData(ctx: EventHandlerContext): Promise<FactoryDayData> {
   const factory = (await ctx.store.get(Factory, '1'))
@@ -156,3 +158,18 @@ export async function updateZenlinkDayInfo(ctx: EventHandlerContext): Promise<Ze
   return zenlinkDayInfo
 }
 
+
+export async function updateZenlinkInfo(ctx:EventHandlerContext): Promise<ZenlinkInfo> {
+  const zenlinkInfo = await getZenlinkInfo(ctx)
+  const { factory } = zenlinkInfo
+  zenlinkInfo.totalTvlUSD = BigDecimal(factory?.totalLiquidityUSD || '0')
+    // .add(stableSwapInfo.totalTvlUSD)
+    .toFixed(6)
+  zenlinkInfo.totalVolumeUSD = BigDecimal(factory?.totalVolumeUSD || '0')
+    // .add(stableSwapInfo.totalVolumeUSD)
+    .toFixed(6)
+  zenlinkInfo.txCount = (factory?.txCount || 0)
+  zenlinkInfo.updatedDate = new Date(ctx.block.timestamp)
+  await ctx.store.save(zenlinkInfo)
+  return zenlinkInfo
+}

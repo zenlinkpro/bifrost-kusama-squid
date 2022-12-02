@@ -1,4 +1,5 @@
-import { Factory, LiquidityPosition, Transaction } from "../model"
+import { ZERO_BD } from "../constants"
+import { Factory, LiquidityPosition, Transaction, ZenlinkInfo } from "../model"
 import { EventHandlerContext } from "../types"
 
 export async function getFactory(ctx: EventHandlerContext) {
@@ -17,4 +18,25 @@ export async function getPosition(ctx: EventHandlerContext, id: string) {
   const item = await ctx.store.get(LiquidityPosition, id)
 
   return item
+}
+
+export async function getZenlinkInfo(ctx: EventHandlerContext) {
+  let zenlinkInfo = await ctx.store.get(ZenlinkInfo, {
+    where: { id: '1' },
+    relations: { factory: true, stableSwapInfo: true }
+  })
+  if (!zenlinkInfo) {
+    zenlinkInfo = new ZenlinkInfo({
+      id: '1',
+      updatedDate: new Date(ctx.block.timestamp),
+      totalVolumeUSD: ZERO_BD.toString(),
+      totalTvlUSD: ZERO_BD.toString(),
+      txCount: 0,
+      factory: await getFactory(ctx),
+      // stableSwapInfo: await getStableSwapInfo(ctx)
+    })
+    await ctx.store.save(zenlinkInfo)
+  }
+
+  return zenlinkInfo
 }
