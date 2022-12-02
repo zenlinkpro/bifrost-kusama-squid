@@ -6,30 +6,30 @@ import { EventHandlerContext, TOEKN_EVENT_TYPE } from "../types";
 import { config } from "../config";
 import { Big as BigDecimal } from 'big.js'
 import { createLiquidityPosition } from '../utils/helpers';
-import { 
-  Bundle, 
-  Burn, 
-  LiquidityPosition, 
-  LiquidityPositionSnapshot, 
-  Mint, 
-  Pair, 
-  Token, 
-  Transaction, 
-  User 
+import {
+  Bundle,
+  Burn,
+  LiquidityPosition,
+  LiquidityPositionSnapshot,
+  Mint,
+  Pair,
+  Token,
+  Transaction,
+  User
 } from "../model";
-import { 
-  CurrenciesDepositedEvent, 
-  CurrenciesTransferredEvent, 
-  CurrenciesWithdrawnEvent, 
-  TokensDepositedEvent, 
-  TokensTransferEvent, 
-  TokensWithdrawnEvent 
+import {
+  CurrenciesDepositedEvent,
+  CurrenciesTransferredEvent,
+  CurrenciesWithdrawnEvent,
+  TokensDepositedEvent,
+  TokensTransferEvent,
+  TokensWithdrawnEvent
 } from "../types/events";
-import { 
-  getPairStatusFromAssets, 
-  getTokenBalance, 
-  invertedTokenSymbolMap, 
-  parseToTokenIndex 
+import {
+  getPairStatusFromAssets,
+  getTokenBalance,
+  invertedTokenSymbolMap,
+  parseToTokenIndex
 } from "../utils/token";
 
 
@@ -78,6 +78,16 @@ export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN
 
   const value = event.amount.toString()
   const to = codec(config.prefix).encode(event.who)
+  let user = await ctx.store.get(User, to)
+  if (!user) {
+    user = new User({
+      id: to,
+      liquidityPositions: [],
+      stableSwapLiquidityPositions: [],
+      usdSwapped: ZERO_BD.toFixed(6)
+    })
+    await ctx.store.save(user)
+  }
 
   const transactionHash = ctx.event.extrinsic!.hash
   // get or create transaction
@@ -153,6 +163,17 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
   if (!pair) return
 
   const value = event.amount.toString()
+  const to = codec(config.prefix).encode(event.who)
+  let user = await ctx.store.get(User, to)
+  if (!user) {
+    user = new User({
+      id: to,
+      liquidityPositions: [],
+      stableSwapLiquidityPositions: [],
+      usdSwapped: ZERO_BD.toFixed(6)
+    })
+    await ctx.store.save(user)
+  }
 
   const transactionHash = ctx.event.extrinsic!.hash
   // get or create transaction
@@ -225,7 +246,7 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
 
 export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
   let event
-  if (type === TOEKN_EVENT_TYPE.Currencies) { 
+  if (type === TOEKN_EVENT_TYPE.Currencies) {
     const _event = new CurrenciesTransferredEvent(ctx, ctx.event)
     if (_event.isV802) {
       event = { currencyId: _event.asV802[0], from: _event.asV802[1], to: _event.asV802[2], amount: _event.asV802[3] }
@@ -290,22 +311,22 @@ export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_
   await createLiquiditySnapShot(ctx, pair, positionFrom)
 
   let userTo = await ctx.store.get(User, to)
-    if (!userTo) {
-      userTo = new User({
-        id: to,
-        liquidityPositions: [],
-        stableSwapLiquidityPositions: [],
-        usdSwapped: ZERO_BD.toFixed(6)
-      })
-      await ctx.store.save(userTo)
-    }
-    const positionTo = await updateLiquidityPosition(ctx, pair, userTo)
-    positionTo.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.to))?.toString() ?? '0'
-    await ctx.store.save(positionTo)
-    await createLiquiditySnapShot(ctx, pair, positionTo)
+  if (!userTo) {
+    userTo = new User({
+      id: to,
+      liquidityPositions: [],
+      stableSwapLiquidityPositions: [],
+      usdSwapped: ZERO_BD.toFixed(6)
+    })
+    await ctx.store.save(userTo)
+  }
+  const positionTo = await updateLiquidityPosition(ctx, pair, userTo)
+  positionTo.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.to))?.toString() ?? '0'
+  await ctx.store.save(positionTo)
+  await createLiquiditySnapShot(ctx, pair, positionTo)
 }
 
-async function updateLiquidityPosition(
+export async function updateLiquidityPosition(
   ctx: EventHandlerContext,
   pair: Pair,
   user: User
@@ -324,7 +345,7 @@ async function updateLiquidityPosition(
   return position
 }
 
-async function createLiquiditySnapShot(
+export async function createLiquiditySnapShot(
   ctx: EventHandlerContext,
   pair: Pair,
   position: LiquidityPosition,
@@ -336,21 +357,25 @@ async function createLiquiditySnapShot(
   const token1 = await ctx.store.get(Token, pair.token1.id)
   if (!token0 || !token1) return
 
-  // create new snapshot
-  const snapshot = new LiquidityPositionSnapshot({
-    id: `${position.id}-${timestamp}`,
-    liquidityPosition: position,
-    timestamp: new Date(timestamp),
-    block: ctx.block.height,
-    user: position.user,
-    pair: position.pair,
-    token0PriceUSD: BigDecimal(token0.derivedETH).times(BigDecimal(bundle.ethPrice)).toFixed(6),
-    token1PriceUSD: BigDecimal(token1.derivedETH).times(BigDecimal(bundle.ethPrice)).toFixed(6),
-    reserve0: pair.reserve0,
-    reserve1: pair.reserve1,
-    reserveUSD: pair.reserveUSD,
-    liquidityTokenTotalSupply: pair.totalSupply,
-    liquidityTokenBalance: position.liquidityTokenBalance,
-  })
-  await ctx.store.save(snapshot)
+  let snapshot = await ctx.store.get(LiquidityPositionSnapshot, `${position.id}${timestamp}`)
+
+  if (!snapshot) {
+    // create new snapshot
+    snapshot = new LiquidityPositionSnapshot({
+      id: `${position.id}${timestamp}`,
+      liquidityPosition: position,
+      timestamp: new Date(timestamp),
+      block: ctx.block.height,
+      user: position.user,
+      pair: position.pair,
+      token0PriceUSD: BigDecimal(token0.derivedETH).times(BigDecimal(bundle.ethPrice)).toFixed(6),
+      token1PriceUSD: BigDecimal(token1.derivedETH).times(BigDecimal(bundle.ethPrice)).toFixed(6),
+      reserve0: pair.reserve0,
+      reserve1: pair.reserve1,
+      reserveUSD: pair.reserveUSD,
+      liquidityTokenTotalSupply: pair.totalSupply,
+      liquidityTokenBalance: position.liquidityTokenBalance,
+    })
+    await ctx.store.save(snapshot)
+  }
 }

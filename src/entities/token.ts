@@ -3,7 +3,7 @@ import { Token } from "../model";
 import { EventHandlerContext } from "../types";
 import { AssetRegistryCurrencyMetadatasStorage } from "../types/storage";
 import { AssetId } from "../types/v906";
-import { addressFromAsset, u8a2s, zenlinkAssetIdToCurrencyId } from "../utils/token";
+import { addressFromAsset, getTotalIssuance, u8a2s, zenlinkAssetIdToCurrencyId } from "../utils/token";
 import * as v956 from '../types/v956'
 import * as v962 from '../types/v962'
 
@@ -36,11 +36,12 @@ export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId)
 
     if (!metaddata) return undefined
     const { name, symbol, decimals } = metaddata
+    const totalSupply = await getTotalIssuance(ctx, zenlinkAssetIdToCurrencyId(asset))
     token = new Token({
       id: address.toLowerCase(),
       name,
       symbol,
-      totalSupply: ZERO_BD.toString(),
+      totalSupply: totalSupply?.toString() ?? '0',
       decimals,
       derivedETH: ZERO_BD.toString(),
       tradeVolume: ZERO_BD.toString(),

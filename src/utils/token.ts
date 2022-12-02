@@ -63,13 +63,22 @@ export function addressFromAsset({ chainId, assetIndex, assetType }: AssetId) {
   return `${chainId}-${assetType}-${assetIndex.toString()}`
 }
 
+export function assetIdFromAddress(address: string): AssetId {
+  const [chainId, assetType, assetIndex] = address.split('-')
+  return {
+    chainId: Number(chainId),
+    assetType: Number(assetType),
+    assetIndex: BigInt(assetIndex)
+  }
+}
+
 export function parseTokenType(assetIndex: number): string {
   const assetU8 = ((assetIndex & 0x0000_0000_0000_ff00) >> 8)
 
   return currencyKeyMap[assetU8]
 }
 
-export function zenlinkAssetIdToCurrencyId(asset: AssetId) {
+export function zenlinkAssetIdToCurrencyId(asset: AssetId): any  {
   const assetIndex = Number(asset.assetIndex.toString())
   const assetU8 = ((assetIndex & 0x0000_0000_0000_ff00) >> 8)
   const tokenType = parseTokenType(assetIndex)
