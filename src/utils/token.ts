@@ -1,9 +1,20 @@
 import { EventHandlerContext } from "../types";
-import { ZenlinkProtocolLiquidityPairsStorage, ZenlinkProtocolPairStatusesStorage } from "../types/storage";
+import { 
+  TokensAccountsStorage, 
+  ZenlinkProtocolLiquidityPairsStorage, 
+  ZenlinkProtocolPairStatusesStorage 
+} from "../types/storage";
 import { AssetId } from "../types/v906";
 import { codec } from '@subsquid/ss58'
 import { config } from "../config";
 import { invert } from 'lodash'
+import * as v802 from '../types/v802'
+import * as v906 from '../types/v906'
+import * as v916 from '../types/v916'
+import * as v920 from '../types/v920'
+import * as v932 from '../types/v932'
+import * as v956 from '../types/v956'
+import * as v962 from '../types/v962'
 
 export const currencyKeyMap: { [index: number]: string } = {
   0: 'Native',
@@ -153,4 +164,29 @@ export async function getPairStatusFromAssets(
 
     return [undefined, BigInt(0)]
   }
+}
+
+export async function getTokenBalance(
+  ctx: EventHandlerContext,
+  assetId: v962.CurrencyId,
+  account: Uint8Array
+) {
+  const tokenAccountsStorage = new TokensAccountsStorage(ctx, ctx.block)
+  let result
+  if (tokenAccountsStorage.isV802) {
+    result = await tokenAccountsStorage.getAsV802(account, assetId as v802.CurrencyId)
+  } else if (tokenAccountsStorage.isV906) {
+    result = await tokenAccountsStorage.getAsV906(account, assetId as v906.CurrencyId)
+  } else if (tokenAccountsStorage.isV916) {
+    result = await tokenAccountsStorage.getAsV916(account, assetId as v916.CurrencyId)
+  } else if (tokenAccountsStorage.isV920) {
+    result = await tokenAccountsStorage.getAsV920(account, assetId as v920.CurrencyId)
+  } else if (tokenAccountsStorage.isV932) {
+    result = await tokenAccountsStorage.getAsV932(account, assetId as v932.CurrencyId)
+  } else if (tokenAccountsStorage.isV956) {
+    result = await tokenAccountsStorage.getAsV956(account, assetId as v956.CurrencyId)
+  } else if (tokenAccountsStorage.isV962) (
+    result = await tokenAccountsStorage.getAsV962(account, assetId as v962.CurrencyId)
+  )
+  return result?.free
 }

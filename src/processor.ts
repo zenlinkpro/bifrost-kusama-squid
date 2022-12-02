@@ -2,7 +2,7 @@ import { SubstrateBatchProcessor } from "@subsquid/substrate-processor"
 import { TypeormDatabase } from "@subsquid/typeorm-store"
 import { config } from "./config"
 import { handleLiquidityAdded } from './mappings/protocol'
-import { handleTokenDeposited, handleTokenWithdrawn } from "./mappings/token"
+import { handleTokenDeposited, handleTokenTransfer, handleTokenWithdrawn } from "./mappings/token"
 import { TOEKN_EVENT_TYPE } from "./types"
 
 const DataSelection = { data: { event: true } } as const
@@ -10,7 +10,7 @@ const DataSelection = { data: { event: true } } as const
 const processor = new SubstrateBatchProcessor()
   .setDataSource(config.dataSource)
   .setBlockRange({ from: 907128 })
-  .addEvent('Currencies.Transfer', DataSelection)
+  .addEvent('Currencies.Transferred', DataSelection)
   .addEvent('Currencies.Deposited', DataSelection)
   .addEvent('Currencies.Withdrawn', DataSelection)
   .addEvent('Tokens.Transfer', DataSelection)
@@ -30,11 +30,17 @@ processor.run(new TypeormDatabase(), async ctx => {
         case 'Currencies.Withdrawn':
           await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Currencies)
           break
+        case 'Currencies.Transferred':
+          await handleTokenTransfer({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Currencies)
+          break
         case 'Tokens.Deposited':
           await handleTokenDeposited({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
           break
         case 'Tokens.Withdrawn':
           await handleTokenWithdrawn({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
+          break
+        case 'Tokens.Transfer':
+          await handleTokenTransfer({ ...ctx, block: block.header, event: item.event }, TOEKN_EVENT_TYPE.Tokens)
           break
         case 'ZenlinkProtocol.LiquidityAdded':
           await handleLiquidityAdded({ ...ctx, block: block.header, event: item.event })

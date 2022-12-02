@@ -1,4 +1,4 @@
-import { Factory, Transaction } from "../model"
+import { Factory, LiquidityPosition, Transaction } from "../model"
 import { EventHandlerContext } from "../types"
 
 export async function getFactory(ctx: EventHandlerContext) {
@@ -9,6 +9,12 @@ export async function getFactory(ctx: EventHandlerContext) {
 
 export async function getTransaction(ctx: EventHandlerContext, id: string) {
   const item = await ctx.store.get(Transaction, id)
+
+  return item
+}
+
+export async function getPosition(ctx: EventHandlerContext, id: string) {
+  const item = await ctx.store.get(LiquidityPosition, id)
 
   return item
 }
