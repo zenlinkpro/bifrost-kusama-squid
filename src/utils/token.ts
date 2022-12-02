@@ -1,9 +1,11 @@
 import { EventHandlerContext } from "../types";
-import { 
+import {
+  BalancesTotalIssuanceStorage,
   SystemAccountStorage,
-  TokensAccountsStorage, 
-  ZenlinkProtocolLiquidityPairsStorage, 
-  ZenlinkProtocolPairStatusesStorage 
+  TokensAccountsStorage,
+  TokensTotalIssuanceStorage,
+  ZenlinkProtocolLiquidityPairsStorage,
+  ZenlinkProtocolPairStatusesStorage
 } from "../types/storage";
 import { AssetId } from "../types/v906";
 import { codec } from '@subsquid/ss58'
@@ -173,7 +175,7 @@ export async function getTokenBalance(
   account: Uint8Array
 ) {
   let result
-  if (assetId.__kind ) {
+  if (assetId.__kind === 'Native') {
     const systemAccountStorate = new SystemAccountStorage(ctx, ctx.block)
     result = (await systemAccountStorate.getAsV1(account)).data
   } else {
@@ -194,6 +196,33 @@ export async function getTokenBalance(
       result = await tokenAccountsStorage.getAsV962(account, assetId as v962.CurrencyId)
     )
   }
-  
+
   return result?.free
+}
+
+export async function getTotalIssuance(ctx: EventHandlerContext, assetId: v962.CurrencyId) {
+  let result
+  if (assetId.__kind === 'Native') {
+    const balanceIssuanceStorage = new BalancesTotalIssuanceStorage(ctx, ctx.block)
+    result = await balanceIssuanceStorage.getAsV1()
+  } else {
+    const tokenIssuanceStorage = new TokensTotalIssuanceStorage(ctx, ctx.block)
+    if (tokenIssuanceStorage.isV802) {
+      result = await tokenIssuanceStorage.getAsV802(assetId as v802.CurrencyId)
+    } else if (tokenIssuanceStorage.isV906) {
+      result = await tokenIssuanceStorage.getAsV906(assetId as v906.CurrencyId)
+    } else if (tokenIssuanceStorage.isV916) {
+      result = await tokenIssuanceStorage.getAsV916(assetId as v916.CurrencyId)
+    } else if (tokenIssuanceStorage.isV920) {
+      result = await tokenIssuanceStorage.getAsV920(assetId as v920.CurrencyId)
+    } else if (tokenIssuanceStorage.isV932) {
+      result = await tokenIssuanceStorage.getAsV932(assetId as v932.CurrencyId)
+    } else if (tokenIssuanceStorage.isV956) {
+      result = await tokenIssuanceStorage.getAsV956(assetId as v956.CurrencyId)
+    } else if (tokenIssuanceStorage.isV962) (
+      result = await tokenIssuanceStorage.getAsV962(assetId as v962.CurrencyId)
+    )
+  }
+
+  return result
 }
