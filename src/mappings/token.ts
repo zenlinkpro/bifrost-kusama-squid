@@ -38,6 +38,8 @@ async function isCompleteMint(ctx: EventHandlerContext, mintId: string): Promise
 }
 
 export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
+  const transactionHash = ctx.event.extrinsic?.hash
+  if (!transactionHash) return
   let event
   if (type === TOEKN_EVENT_TYPE.Currencies) {
     const _event = new CurrenciesDepositedEvent(ctx, ctx.event)
@@ -89,7 +91,6 @@ export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN
     await ctx.store.save(user)
   }
 
-  const transactionHash = ctx.event.extrinsic!.hash
   // get or create transaction
   let transaction = await getTransaction(ctx, transactionHash)
   if (!transaction) {
@@ -124,6 +125,8 @@ export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN
 }
 
 export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
+  const transactionHash = ctx.event.extrinsic?.hash
+  if (!transactionHash) return
   let event
   if (type === TOEKN_EVENT_TYPE.Currencies) {
     const _event = new CurrenciesWithdrawnEvent(ctx, ctx.event)
@@ -175,7 +178,6 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
     await ctx.store.save(user)
   }
 
-  const transactionHash = ctx.event.extrinsic!.hash
   // get or create transaction
   let transaction = await getTransaction(ctx, transactionHash)
   if (!transaction) {
