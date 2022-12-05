@@ -128,7 +128,9 @@ async function handleLiquiditySync(ctx: EventHandlerContext, pair: Pair) {
 }
 
 export async function handleLiquidityAdded(ctx: EventHandlerContext) {
-  const transaction = await ctx.store.get(Transaction, ctx.event.extrinsic!.hash)
+  const txHash = ctx.event.extrinsic?.hash
+  if (!txHash) return
+  const transaction = await ctx.store.get(Transaction, txHash)
   // safety check
   if (!transaction) return
   const { mints } = transaction
@@ -189,7 +191,9 @@ export async function handleLiquidityAdded(ctx: EventHandlerContext) {
 }
 
 export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
-  const transaction = await ctx.store.get(Transaction, ctx.event.extrinsic!.hash)
+  const txHash = ctx.event.extrinsic?.hash
+  if (!txHash) return
+  const transaction = await ctx.store.get(Transaction, txHash)
   if (!transaction) return
   const { burns } = transaction
   const burn = (await ctx.store.get(Burn, burns[burns.length - 1]))!
@@ -263,6 +267,8 @@ export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
 }
 
 export async function handleAssetSwap(ctx: EventHandlerContext) {
+  const txHash = ctx.event.extrinsic?.hash
+  if (!txHash) return
   const _event = new ZenlinkProtocolAssetSwapEvent(ctx, ctx.event)
   if (_event.isV902) return
   const event = _event.asV906
@@ -367,10 +373,10 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
     factory.txCount += 1
     await ctx.store.save(factory)
 
-    let transaction = await getTransaction(ctx, ctx.event.extrinsic!.hash)
+    let transaction = await getTransaction(ctx, txHash)
     if (!transaction) {
       transaction = new Transaction({
-        id: ctx.event.extrinsic!.hash,
+        id: txHash,
         blockNumber: BigInt(ctx.block.height),
         timestamp: new Date(ctx.block.timestamp),
         mints: [],
