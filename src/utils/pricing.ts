@@ -13,11 +13,12 @@ export const WNATIVE_USDC = '2001-2-8796093023744'
 export const WHITELIST: string[] = [
   '2001-0-0', // wnative
   '2001-2-2048', // usdc
-  '2001-2-519' // zlk
+  '2001-2-519', // zlk
+  '2001-2-516' // ksm
 ]
 
 // minimum liquidity required to count towards tracked volume for pairs with small # of Lps
-export const MINIMUM_USD_THRESHOLD_NEW_PAIRS = new BigDecimal(3000)
+export const MINIMUM_USD_THRESHOLD_NEW_PAIRS = new BigDecimal(1000)
 
 // minimum liquidity for price to get tracked
 export const MINIMUM_LIQUIDITY_THRESHOLD_ETH = new BigDecimal(5)
