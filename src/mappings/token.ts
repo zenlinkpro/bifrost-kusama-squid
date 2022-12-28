@@ -122,6 +122,11 @@ export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN
     await ctx.store.save(transaction)
   }
   await ctx.store.save(pair)
+
+  const position = await updateLiquidityPosition(ctx, pair, user)
+  position.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.who))?.toString() ?? '0'
+  await ctx.store.save(position)
+  await createLiquiditySnapShot(ctx, pair, position)
 }
 
 export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
@@ -244,6 +249,11 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
 
   await ctx.store.save(transaction)
   await ctx.store.save(pair)
+
+  const position = await updateLiquidityPosition(ctx, pair, user)
+  position.liquidityTokenBalance = (await getTokenBalance(ctx, event.currencyId, event.who))?.toString() ?? '0'
+  await ctx.store.save(position)
+  await createLiquiditySnapShot(ctx, pair, position)
 }
 
 export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_EVENT_TYPE) {
