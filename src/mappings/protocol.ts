@@ -134,7 +134,9 @@ export async function handleLiquidityAdded(ctx: EventHandlerContext) {
   // safety check
   if (!transaction) return
   const { mints } = transaction
-  const mint = (await ctx.store.get(Mint, mints[mints.length - 1]))!
+  if (!mints.length) return
+  const mint = await ctx.store.get(Mint, mints[mints.length - 1])
+  if (!mint) return
   const _event = new ZenlinkProtocolLiquidityAddedEvent(ctx, ctx.event)
   if (_event.isV902) return
   const event = _event.asV906
@@ -196,7 +198,9 @@ export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
   const transaction = await ctx.store.get(Transaction, txHash)
   if (!transaction) return
   const { burns } = transaction
-  const burn = (await ctx.store.get(Burn, burns[burns.length - 1]))!
+  if (!burns.length) return
+  const burn = await ctx.store.get(Burn, burns[burns.length - 1])
+  if (!burn) return
   const _event = new ZenlinkProtocolLiquidityRemovedEvent(ctx, ctx.event)
   if (_event.isV902) return
   const event = _event.asV906
