@@ -1,12 +1,13 @@
 import { getPair } from "../entities/pair";
-import { getFactory, getTransaction } from "../entities/utils";
+import { getFactory, getTransaction, getZLKInfo } from "../entities/utils";
 import { Big as BigDecimal } from 'big.js'
 import { Bundle, Burn, Mint, Pair, Swap, Transaction, User } from "../model";
 import { EventHandlerContext } from "../types";
 import {
   ZenlinkProtocolAssetSwapEvent,
   ZenlinkProtocolLiquidityAddedEvent,
-  ZenlinkProtocolLiquidityRemovedEvent
+  ZenlinkProtocolLiquidityRemovedEvent,
+  TokensBalanceSetEvent
 } from "../types/events";
 import { convertTokenToDecimal } from "../utils/helpers";
 import { sortAssets } from "../utils/sort";
@@ -14,6 +15,7 @@ import {
   assetIdFromAddress,
   getPairStatusFromAssets,
   getTokenBalance,
+  getTokenBurned,
   zenlinkAssetIdToCurrencyId
 } from "../utils/token";
 import { ZERO_BD } from "../constants";
@@ -29,7 +31,7 @@ import {
   updateZenlinkInfo
 } from "../utils/updates";
 
-async function handleLiquiditySync(ctx: EventHandlerContext, pair: Pair) {
+export async function handleLiquiditySync(ctx: EventHandlerContext, pair: Pair) {
   const bundle = (await ctx.store.get(Bundle, '1'))!
   const factory = (await getFactory(ctx))!
   const { token0, token1 } = pair
@@ -206,11 +208,12 @@ export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
   const event = _event.asV906
 
   const [asset0, asset1] = sortAssets([event[2], event[3]])
-  const factory = await getFactory(ctx)
+
   const pair = await getPair(ctx, [asset0, asset1])
-  if (!pair || !factory) return
+  if (!pair) return
 
   await handleLiquiditySync(ctx, pair)
+  const factory = (await getFactory(ctx))!
 
   // update txn counts
   pair.txCount += 1
@@ -248,6 +251,7 @@ export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
 
   await ctx.store.save(factory)
   await ctx.store.save(pair)
+  await handleLiquiditySync(ctx, pair);
   await ctx.store.save([token0, token1])
 
   burn.sender = sender
@@ -276,9 +280,6 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
   const _event = new ZenlinkProtocolAssetSwapEvent(ctx, ctx.event)
   if (_event.isV902) return
   const event = _event.asV906
-  const factory = await getFactory(ctx)
-  const bundle = (await ctx.store.get(Bundle, '1'))!
-
   const path = event[2]
   const amounts = event[3]
   const sender = codec(config.prefix).encode(event[0])
@@ -289,7 +290,13 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
     const asset1 = path[i]
 
     const pair = await getPair(ctx, [asset0, asset1])
+
+    if (!pair) return
+    await handleLiquiditySync(ctx, pair)
+    const factory = await getFactory(ctx)
     if (!pair || !factory) return
+
+    const bundle = (await ctx.store.get(Bundle, '1'))!
 
     const { token0, token1 } = pair
 
@@ -459,5 +466,35 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
       amount1Total.times(token1.derivedETH).times(bundle.ethPrice)
     ).toFixed(6)
     await ctx.store.save(token1DayData)
+  }
+}
+
+export async function handleTokensBalanceSet(ctx: EventHandlerContext) {
+  let event;
+
+  const _event = new TokensBalanceSetEvent(ctx, ctx.event)
+  if (_event.isV802) {
+    event = { currencyId: _event.asV802[0], who: _event.asV802[1], free: _event.asV802[2], reserved: _event.asV802[3] }
+  } else if (_event.isV906) {
+    event = { currencyId: _event.asV906[0], who: _event.asV906[1], free: _event.asV906[2], reserved: _event.asV906[3] }
+  } else if (_event.isV916) {
+    event = { currencyId: _event.asV916[0], who: _event.asV916[1], free: _event.asV916[2], reserved: _event.asV916[3] }
+  } else if (_event.isV920) {
+    event = { currencyId: _event.asV920[0], who: _event.asV920[1], free: _event.asV920[2], reserved: _event.asV920[3] }
+  } else if (_event.isV925) {
+    event = _event.asV925
+  } else if (_event.isV932) {
+    event = _event.asV932
+  }
+
+  if (
+    event?.currencyId.__kind === 'Token' &&
+    event?.currencyId.value.__kind === 'ZLK'
+  ) {
+    const burnZLKAmount = await getTokenBurned(ctx, event.currencyId, event.who) ?? 0n;
+    const zlkInfo = await getZLKInfo(ctx);
+    zlkInfo.burn = zlkInfo.burn + burnZLKAmount;
+    zlkInfo.updatedDate = new Date(ctx.block.timestamp)
+    await ctx.store.save(zlkInfo)
   }
 }

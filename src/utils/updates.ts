@@ -9,7 +9,7 @@ import {
   Token, 
   TokenDayData, 
   ZenlinkDayInfo, 
-  ZenlinkInfo
+  ZenlinkInfo,
 } from "../model";
 import { EventHandlerContext } from "../types";
 import { Big as BigDecimal } from 'big.js'

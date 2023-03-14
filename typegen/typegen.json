@@ -9,6 +9,7 @@
     "Tokens.Transfer",
     "Tokens.Deposited",
     "Tokens.Withdrawn",
+    "Tokens.BalanceSet",
     "ZenlinkProtocol.AssetSwap",
     "ZenlinkProtocol.LiquidityAdded",
     "ZenlinkProtocol.LiquidityRemoved"

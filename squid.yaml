@@ -1,8 +1,8 @@
 manifestVersion: subsquid.io/v0.1
 name: zenlink-bifrost-kusama-squid
-version: 1
+version: 2
 description: |-
-  The very first squid from manifest
+  Zenlink Bifrost(Kusama) Squid
 build:
 
 deploy:
@@ -11,4 +11,4 @@ deploy:
   processor:
     cmd: [ "node", "lib/processor" ]
   api:
-    cmd: [ "npx", "squid-graphql-server", "--dumb-cache", "in-memory", "--dumb-cache-ttl", "1000", "--dumb-cache-size", "100", "--dumb-cache-max-age", "1000" ]
+    cmd: [ "npx", "squid-graphql-server"]
