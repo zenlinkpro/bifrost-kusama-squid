@@ -546,5 +546,5 @@ type ZenlinkDayInfo @entity {
 type ZLKInfo @entity {
   id: ID!
   updatedDate: DateTime!
-  burned: BigInt!
+  burn: BigInt!
 }

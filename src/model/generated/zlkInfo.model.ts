@@ -14,5 +14,5 @@ export class ZLKInfo {
     updatedDate!: Date
 
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
-    burned!: bigint
+    burn!: bigint
 }
