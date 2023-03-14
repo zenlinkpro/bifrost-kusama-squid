@@ -235,3 +235,38 @@ export async function getTotalIssuance(ctx: EventHandlerContext, assetId: v962.C
 
   return result
 }
+
+
+export async function getTokenBurned(
+  ctx: EventHandlerContext,
+  assetId: v962.CurrencyId,
+  account: Uint8Array
+) {
+  let block = {
+    hash: ctx.block.parentHash
+  }
+  let result
+  if (assetId.__kind === 'Native') {
+    const systemAccountStorate = new SystemAccountStorage(ctx, block)
+    result = (await systemAccountStorate.getAsV1(account)).data
+  } else {
+    const tokenAccountsStorage = new TokensAccountsStorage(ctx, block)
+    if (tokenAccountsStorage.isV802) {
+      result = await tokenAccountsStorage.getAsV802(account, assetId as v802.CurrencyId)
+    } else if (tokenAccountsStorage.isV906) {
+      result = await tokenAccountsStorage.getAsV906(account, assetId as v906.CurrencyId)
+    } else if (tokenAccountsStorage.isV916) {
+      result = await tokenAccountsStorage.getAsV916(account, assetId as v916.CurrencyId)
+    } else if (tokenAccountsStorage.isV920) {
+      result = await tokenAccountsStorage.getAsV920(account, assetId as v920.CurrencyId)
+    } else if (tokenAccountsStorage.isV932) {
+      result = await tokenAccountsStorage.getAsV932(account, assetId as v932.CurrencyId)
+    } else if (tokenAccountsStorage.isV956) {
+      result = await tokenAccountsStorage.getAsV956(account, assetId as v956.CurrencyId)
+    } else if (tokenAccountsStorage.isV962) (
+      result = await tokenAccountsStorage.getAsV962(account, assetId as v962.CurrencyId)
+    )
+  }
+
+  return result?.free
+}

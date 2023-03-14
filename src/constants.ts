@@ -1,5 +1,7 @@
 import { TokenBase } from "./types";
 import { Big as BigDecimal } from 'big.js'
+import { AssetId } from "./types/v906";
+import { zenlinkAssetIdToCurrencyId } from "./utils/token";
 
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2001-0-0': { name: 'Bifrost', symbol: 'BNC', decimals: 12 },
@@ -12,6 +14,16 @@ export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2001-2-260': { name: 'vKusama', symbol: 'vKSM', decimals: 12 },
   '2001-2-2048': { name: 'USDT', symbol: 'USDT', decimals: 6 },
 }
+
+export const ZLK_ASSET_ID: AssetId = {
+  chainId: 2001,
+  assetType: 2,
+  assetIndex: 519n
+}
+
+export const ZLK_CURRENCY_ID = zenlinkAssetIdToCurrencyId(ZLK_ASSET_ID);
+
+export const ZLK_GOV_HOLD_ACCOUNT = ['cRzg4nyCBKbCZaCYmNQksWGMJuectrHom15ZiuYd7h6NtvW'];
 
 export const ZERO_BI = 0n
 export const ONE_BI = 1n

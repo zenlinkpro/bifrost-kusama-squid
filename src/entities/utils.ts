@@ -1,5 +1,5 @@
 import { ZERO_BD } from "../constants"
-import { Factory, LiquidityPosition, Transaction, ZenlinkInfo } from "../model"
+import { Factory, LiquidityPosition, Transaction, ZenlinkInfo, ZLKInfo } from "../model"
 import { EventHandlerContext } from "../types"
 
 export async function getFactory(ctx: EventHandlerContext) {
@@ -39,4 +39,24 @@ export async function getZenlinkInfo(ctx: EventHandlerContext) {
   }
 
   return zenlinkInfo
+}
+
+
+export async function getZLKInfo(ctx: EventHandlerContext) {
+  let zlkInfo = await ctx.store.get(ZLKInfo, {
+    where: { id: '1' },
+  })
+  if (!zlkInfo) {
+    zlkInfo = new ZLKInfo({
+      id: '1',
+      updatedDate: new Date(ctx.block.timestamp),
+      // holders: 0,
+      // circulatingSupply: 0n,
+      // totalIssue: 0n,
+      burn: 0n,
+    })
+    await ctx.store.save(zlkInfo)
+  }
+
+  return zlkInfo
 }

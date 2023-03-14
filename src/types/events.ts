@@ -322,6 +322,140 @@ export class CurrenciesWithdrawnEvent {
     }
 }
 
+export class TokensBalanceSetEvent {
+    private readonly _chain: Chain
+    private readonly event: Event
+
+    constructor(ctx: EventContext)
+    constructor(ctx: ChainContext, event: Event)
+    constructor(ctx: EventContext, event?: Event) {
+        event = event || ctx.event
+        assert(event.name === 'Tokens.BalanceSet')
+        this._chain = ctx._chain
+        this.event = event
+    }
+
+    /**
+     *  A balance was set by root. \[who, free, reserved\]
+     */
+    get isV802(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === 'd59167e6fa6e1cc5edfac472272cd823c1abb610b670fa1e42776213cea54ba0'
+    }
+
+    /**
+     *  A balance was set by root. \[who, free, reserved\]
+     */
+    get asV802(): [v802.CurrencyId, Uint8Array, bigint, bigint] {
+        assert(this.isV802)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root. \[who, free, reserved\]
+     */
+    get isV906(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === 'b87fd915e42bf43bed1c29ffa7cdd7aae8e66e9bf8abe2a534a275b495528515'
+    }
+
+    /**
+     * A balance was set by root. \[who, free, reserved\]
+     */
+    get asV906(): [v906.CurrencyId, Uint8Array, bigint, bigint] {
+        assert(this.isV906)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root. \[who, free, reserved\]
+     */
+    get isV916(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === '7b8188ff76713954bd121ac1e9cc97d968b12ae8904fe84afa382f572339cb58'
+    }
+
+    /**
+     * A balance was set by root. \[who, free, reserved\]
+     */
+    get asV916(): [v916.CurrencyId, Uint8Array, bigint, bigint] {
+        assert(this.isV916)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root. \[who, free, reserved\]
+     */
+    get isV920(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === 'f79ad22597c9a4713b2ce62aec1afbdd322af47866ae6f07f5cb89d18d995df8'
+    }
+
+    /**
+     * A balance was set by root. \[who, free, reserved\]
+     */
+    get asV920(): [v920.CurrencyId, Uint8Array, bigint, bigint] {
+        assert(this.isV920)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get isV925(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === '42b44be6ddbd575235327ec8b73578a8e2b40e6035875cae6a91cb104548dd36'
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get asV925(): {currencyId: v925.CurrencyId, who: Uint8Array, free: bigint, reserved: bigint} {
+        assert(this.isV925)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get isV932(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === '3e7bcc7a9a0d905d187902778412f9eb8d6bc40ac232733b224250358aac576f'
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get asV932(): {currencyId: v932.CurrencyId, who: Uint8Array, free: bigint, reserved: bigint} {
+        assert(this.isV932)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get isV956(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === 'fdff760cb54afcd8db5c92b89fed1fb754f014d385f0e48e57bf6b914f8d03b5'
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get asV956(): {currencyId: v956.CurrencyId, who: Uint8Array, free: bigint, reserved: bigint} {
+        assert(this.isV956)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get isV962(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === '45992b0db96b3fb8c249d1f8892de429f3924228fad45b8e8c07f0b5c1b355a4'
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get asV962(): {currencyId: v962.CurrencyId, who: Uint8Array, free: bigint, reserved: bigint} {
+        assert(this.isV962)
+        return this._chain.decodeEvent(this.event)
+    }
+}
+
 export class TokensDepositedEvent {
     private readonly _chain: Chain
     private readonly event: Event

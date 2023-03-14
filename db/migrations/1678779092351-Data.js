@@ -1,5 +1,5 @@
-module.exports = class Data1669864659956 {
-    name = 'Data1669864659956'
+module.exports = class Data1678779092351 {
+    name = 'Data1678779092351'
 
     async up(db) {
         await db.query(`CREATE TABLE "factory" ("id" character varying NOT NULL, "pair_count" integer NOT NULL, "total_volume_usd" text NOT NULL, "total_volume_eth" text NOT NULL, "untracked_volume_usd" text NOT NULL, "total_liquidity_usd" text NOT NULL, "total_liquidity_eth" text NOT NULL, "tx_count" integer NOT NULL, CONSTRAINT "PK_1372e5a7d114a3fa80736ba66bb" PRIMARY KEY ("id"))`)
@@ -56,6 +56,7 @@ module.exports = class Data1669864659956 {
         await db.query(`CREATE TABLE "zenlink_day_info" ("id" character varying NOT NULL, "date" TIMESTAMP WITH TIME ZONE NOT NULL, "daily_volume_usd" text NOT NULL, "tvl_usd" text NOT NULL, "standard_info_id" character varying, "stable_info_id" character varying, CONSTRAINT "PK_747195cfa3811d6eea0ff6389de" PRIMARY KEY ("id"))`)
         await db.query(`CREATE INDEX "IDX_9f281ffbf4f668c1671ae24aeb" ON "zenlink_day_info" ("standard_info_id") `)
         await db.query(`CREATE INDEX "IDX_3049b8ac70203e95dfc6b42c02" ON "zenlink_day_info" ("stable_info_id") `)
+        await db.query(`CREATE TABLE "zlk_info" ("id" character varying NOT NULL, "updated_date" TIMESTAMP WITH TIME ZONE NOT NULL, "burn" numeric NOT NULL, CONSTRAINT "PK_58853b5e24384aba0da2023e91e" PRIMARY KEY ("id"))`)
         await db.query(`ALTER TABLE "stable_swap_event" ADD CONSTRAINT "FK_3a147c85b92441217540579be88" FOREIGN KEY ("stable_swap_id") REFERENCES "stable_swap"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "stable_swap_exchange" ADD CONSTRAINT "FK_1180a78feea28e278229de7db46" FOREIGN KEY ("stable_swap_id") REFERENCES "stable_swap"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
         await db.query(`ALTER TABLE "stable_swap_day_data" ADD CONSTRAINT "FK_648b49eb1a4f2a47f24f13bb510" FOREIGN KEY ("stable_swap_id") REFERENCES "stable_swap"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`)
@@ -142,6 +143,7 @@ module.exports = class Data1669864659956 {
         await db.query(`DROP TABLE "zenlink_day_info"`)
         await db.query(`DROP INDEX "public"."IDX_9f281ffbf4f668c1671ae24aeb"`)
         await db.query(`DROP INDEX "public"."IDX_3049b8ac70203e95dfc6b42c02"`)
+        await db.query(`DROP TABLE "zlk_info"`)
         await db.query(`ALTER TABLE "stable_swap_event" DROP CONSTRAINT "FK_3a147c85b92441217540579be88"`)
         await db.query(`ALTER TABLE "stable_swap_exchange" DROP CONSTRAINT "FK_1180a78feea28e278229de7db46"`)
         await db.query(`ALTER TABLE "stable_swap_day_data" DROP CONSTRAINT "FK_648b49eb1a4f2a47f24f13bb510"`)
