@@ -543,16 +543,8 @@ type ZenlinkDayInfo @entity {
   tvlUSD: String!
 }
 
-
-# type ZLKBurnData @entity {
-#   id: ID!  # tx hash
-#   address: String!
-#   amount: String!
-#   # burnUSD: String!
-# }
-
 type ZLKInfo @entity {
   id: ID!
   updatedDate: DateTime!
-  burn: BigInt!
+  burned: BigInt!
 }

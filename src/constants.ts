@@ -23,7 +23,7 @@ export const ZLK_ASSET_ID: AssetId = {
 
 export const ZLK_CURRENCY_ID = zenlinkAssetIdToCurrencyId(ZLK_ASSET_ID);
 
-export const ZLK_GOV_HOLD_ACCOUNT = ['cRzg4nyCBKbCZaCYmNQksWGMJuectrHom15ZiuYd7h6NtvW'];
+export const ZLK_GOV_ACCOUNT = ['cRzg4nyCBKbCZaCYmNQksWGMJuectrHom15ZiuYd7h6NtvW'];
 
 export const ZERO_BI = 0n
 export const ONE_BI = 1n

@@ -1,4 +1,4 @@
-import { ZERO_BD, ZLK_ASSET_ID, ZLK_GOV_HOLD_ACCOUNT } from "../constants";
+import { ZERO_BD } from "../constants";
 import { 
   Bundle,
   Factory, 
@@ -10,14 +10,10 @@ import {
   TokenDayData, 
   ZenlinkDayInfo, 
   ZenlinkInfo,
-  ZLKInfo
 } from "../model";
 import { EventHandlerContext } from "../types";
 import { Big as BigDecimal } from 'big.js'
-import { getZenlinkInfo, getZLKInfo } from "../entities/utils";
-import { getTokenBalance, getTotalIssuance, zenlinkAssetIdToCurrencyId } from "./token";
-import { codec, encode } from "@subsquid/ss58";
-import { config } from "../config";
+import { getZenlinkInfo } from "../entities/utils";
 
 export async function updateFactoryDayData(ctx: EventHandlerContext): Promise<FactoryDayData> {
   const factory = (await ctx.store.get(Factory, '1'))

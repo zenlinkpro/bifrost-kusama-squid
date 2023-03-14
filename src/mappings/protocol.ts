@@ -493,7 +493,7 @@ export async function handleTokensBalanceSet(ctx: EventHandlerContext) {
   ) {
     const burnZLKAmount = await getTokenBurned(ctx, event.currencyId, event.who) ?? 0n;
     const zlkInfo = await getZLKInfo(ctx);
-    zlkInfo.burn = zlkInfo.burn + burnZLKAmount;
+    zlkInfo.burned = zlkInfo.burned + burnZLKAmount;
     zlkInfo.updatedDate = new Date(ctx.block.timestamp)
     await ctx.store.save(zlkInfo)
   }

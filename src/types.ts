@@ -5,7 +5,6 @@ import {
   EventHandlerContext as _EventHandlerContext,
 } from '@subsquid/substrate-processor'
 import { Store } from '@subsquid/typeorm-store'
-import { string } from './model/generated/marshal'
 
 export interface ProcessorConfig {
   chainName: string
