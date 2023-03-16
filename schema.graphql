@@ -100,10 +100,18 @@ type StableSwap @entity {
   stableSwapDayData: [StableSwapDayData!] @derivedFrom(field: "stableSwap")
   stableSwapHourData: [StableSwapHourData!] @derivedFrom(field: "stableSwap")
 
+  farm: [Farm!] @derivedFrom(field: "stakeToken")
+
+
   "BigDecimal"
   tvlUSD: String!
   "BigDecimal"
   volumeUSD: String!
+
+    " APR "
+  apr: BigDecimal!
+  " When APR was last updated "
+  aprUpdatedAtTimestamp: BigInt!
 }
 
 type StableSwapEvent @entity{
@@ -276,6 +284,11 @@ type Pair @entity {
   createdAtTimestamp: DateTime!
   createdAtBlockNumber: BigInt!
 
+  " APR "
+  apr: BigDecimal!
+  " When APR was last updated "
+  aprUpdatedAtTimestamp: BigInt!
+
   # Fields used to help derived relationship
   liquidityProviderCount: Int! # used to detect new exchanges
   # derived fields
@@ -293,6 +306,8 @@ type User @entity {
   id: ID!
   liquidityPositions: [LiquidityPosition!] @derivedFrom(field: "user")
   stableSwapLiquidityPositions: [StableSwapLiquidityPosition!] @derivedFrom(field: "user")
+  stakePositions: [StakePosition!] @derivedFrom(field: "user")
+  # singleTokenLockPositions repeat with stake Positions
   "BigDecimal"
   usdSwapped: String!
 }
@@ -459,6 +474,10 @@ type PairHourData @entity {
   hourlyVolumeToken1: String!
   hourlyVolumeUSD: String!
   hourlyTxns: Int!
+
+  " Used to calculate apr "
+  cumulativeVolumeUSD: BigDecimal!
+  apr: BigDecimal!
 }
 
 type PairDayData @entity {
@@ -484,6 +503,10 @@ type PairDayData @entity {
   dailyVolumeToken1: String!
   dailyVolumeUSD: String!
   dailyTxns: Int!
+
+  " Used to calculate apr "
+  cumulativeVolumeUSD: BigDecimal!
+  apr: BigDecimal!
 }
 
 type TokenDayData @entity {
@@ -513,6 +536,10 @@ type StableSwapDayData @entity {
 
   dailyVolumeUSD: String!
   tvlUSD: String!
+
+    " Used to calculate apr "
+  cumulativeVolumeUSD: BigDecimal!
+  apr: BigDecimal!
 }
 
 type StableSwapHourData @entity {
@@ -522,6 +549,9 @@ type StableSwapHourData @entity {
 
   hourlyVolumeUSD: String!
   tvlUSD: String!
+      " Used to calculate apr "
+  cumulativeVolumeUSD: BigDecimal!
+  apr: BigDecimal!
 }
 
 type StableDayData @entity {
@@ -547,4 +577,126 @@ type ZLKInfo @entity {
   id: ID!
   updatedDate: DateTime!
   burn: BigInt!
+}
+
+type SingleTokenLockDayData @entity {
+  id: ID!
+  singleTokenLock: SingleTokenLock
+  date: DateTime!
+  tvlUSD: String!
+
+  # " Used to calculate apr "
+  # rewardUSD: BigDecimal!
+  # apr: BigDecimal!
+}
+
+type SingleTokenLockHourData  @entity {
+  id: ID!
+  hourStartUnix: BigInt! # unix timestamp for start of hour
+  singleTokenLock: SingleTokenLock
+  tvlUSD: String!
+  # " Used to calculate apr "
+  # rewardUSD: BigDecimal!
+  # apr: BigDecimal!
+}
+
+
+type SingleTokenLock {
+  id: ID!
+  token: Token!
+  # total liquidity
+  "BigDecimal"
+  totalLiquidityUSD: String!
+  "BigDecimal"
+  totalLiquidityETH: String!
+  singleTokenLockDayData:[SingleTokenLockDayData!] @derivedFrom(field: "singleTokenLock")
+  singleTokenLockHourData:[SingleTokenLockHourData!] @derivedFrom(field: "singleTokenLock")
+  farm: [Farm!] @derivedFrom(field: "stakeToken")
+
+}
+
+
+type Reward @entity {
+  id: ID!
+  user: User!
+  token: Token!
+  farm: Farm!
+  incentive: Incentive!
+  claimedAmount: BigInt!
+  claimableAmount: BigDecimal!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  modifiedAtBlock: BigInt!
+  modifiedAtTimestamp: BigInt!
+}
+
+type StakePosition @entity {
+  id: ID!
+  user: User!
+  token: Token!
+  farm: Farm!
+  liquidity: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  modifiedAtBlock: BigInt!
+  modifiedAtTimestamp: BigInt!
+}
+
+
+
+# type FarmHourData {
+#   id: ID!
+#   date: DateTime!
+#   farm: Farm!
+#   liquidityStaked: BigInt!
+#   # stake reward apr
+#   stakeUSD: String!
+#   rewardUSDRate: String!
+#   incentives: [Incentive!]! @derivedFrom(field: "farm")
+# }
+
+# type FarmDayData {
+#   id: ID!
+#   date: DateTime!
+#   farm: Farm!
+#   liquidityStaked: BigInt!
+#   # stake reward apr
+#   stakeUSD: String!
+#   rewardUSDRate: String!
+#   incentives: [Incentive!]! @derivedFrom(field: "farm")
+# }
+
+
+type Farm @entity {
+  id: ID!
+  pid: BigInt!
+  stakeToken: Token!
+  liquidityStaked: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  incentives: [Incentive!]! @derivedFrom(field: "farm")
+
+  # stake apr
+  stakeUSD: string!
+  rewardUSDRate: string!
+}
+
+
+type Incentive @entity {
+  id: ID!
+  farm: Farm!
+  stakeToken: Token!
+  rewardToken: Token!
+  rewardsAccrued: BigInt! 
+  rewardsRemaining: BigInt! #
+  liquidityStaked: BigInt!
+  rewardRate:  BigInt! 
+  rewards: [Reward!]!
+  createdBy: User!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  modifiedAtBlock: BigInt!
+  modifiedAtTimestamp: BigInt!
+  rewardsUpdatedAtBlock: BigInt!
+  rewardsUpdatedAtTimestamp: BigInt!
 }
