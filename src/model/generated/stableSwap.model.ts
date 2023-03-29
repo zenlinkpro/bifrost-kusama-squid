@@ -5,6 +5,7 @@ import {StableSwapEvent} from "./stableSwapEvent.model"
 import {StableSwapExchange} from "./stableSwapExchange.model"
 import {StableSwapDayData} from "./stableSwapDayData.model"
 import {StableSwapHourData} from "./stableSwapHourData.model"
+import {Farm} from "./farm.model"
 
 @Entity_()
 export class StableSwap {
@@ -69,6 +70,9 @@ export class StableSwap {
 
     @OneToMany_(() => StableSwapHourData, e => e.stableSwap)
     stableSwapHourData!: StableSwapHourData[]
+
+    @OneToMany_(() => Farm, e => e.stableSwap)
+    farm!: Farm[]
 
     /**
      * BigDecimal

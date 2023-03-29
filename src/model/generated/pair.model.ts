@@ -8,6 +8,7 @@ import {LiquidityPositionSnapshot} from "./liquidityPositionSnapshot.model"
 import {Mint} from "./mint.model"
 import {Burn} from "./burn.model"
 import {Swap} from "./swap.model"
+import {Farm} from "./farm.model"
 
 @Entity_()
 export class Pair {
@@ -107,6 +108,9 @@ export class Pair {
     @Column_("numeric", {transformer: marshal.bigintTransformer, nullable: false})
     createdAtBlockNumber!: bigint
 
+    /**
+     *  APR 
+     */
     @Column_("int4", {nullable: false})
     liquidityProviderCount!: number
 
@@ -130,4 +134,7 @@ export class Pair {
 
     @OneToMany_(() => Swap, e => e.pair)
     swaps!: Swap[]
+
+    @OneToMany_(() => Farm, e => e.pair)
+    farm!: Farm[]
 }

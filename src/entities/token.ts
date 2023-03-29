@@ -20,9 +20,9 @@ export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId)
     } else {
       const currencyId = zenlinkAssetIdToCurrencyId(asset)
       const result = metadataStorage.isV956
-        ? await metadataStorage.getAsV956(currencyId as v956.CurrencyId)
+        ? await metadataStorage.asV956.get(currencyId as v956.CurrencyId)
         : metadataStorage.isV962
-          ? await metadataStorage.getAsV962(currencyId as v962.CurrencyId)
+          ? await metadataStorage.asV962.get(currencyId as v962.CurrencyId)
           : undefined
 
       if (result) {
