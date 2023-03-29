@@ -69,6 +69,45 @@ export interface AssetMetadata {
     minimalBalance: bigint
 }
 
+export interface GaugePoolInfo {
+    pid: number
+    token: CurrencyId
+    keeper: Uint8Array
+    rewardIssuer: Uint8Array
+    rewards: [CurrencyId, [bigint, bigint, bigint]][]
+    gaugeBasicRewards: [CurrencyId, bigint][]
+    maxBlock: number
+    gaugeAmount: bigint
+    totalTimeFactor: bigint
+    gaugeState: GaugeState
+    gaugeLastBlock: number
+}
+
+export interface Type_646 {
+    tokensProportion: [CurrencyId, number][]
+    totalShares: bigint
+    basicRewards: [CurrencyId, bigint][]
+    rewards: [CurrencyId, [bigint, bigint]][]
+    state: Type_652
+    keeper: Uint8Array
+    rewardIssuer: Uint8Array
+    gauge: (number | undefined)
+    blockStartup: (number | undefined)
+    minDepositToStart: bigint
+    afterBlockToStart: number
+    withdrawLimitTime: number
+    claimLimitTime: number
+    withdrawLimitCount: number
+}
+
+export interface ShareInfo {
+    who: Uint8Array
+    share: bigint
+    withdrawnRewards: [CurrencyId, bigint][]
+    claimLastBlock: number
+    withdrawList: [number, bigint][]
+}
+
 export interface Type_568 {
     free: bigint
     reserved: bigint
@@ -119,4 +158,36 @@ export interface TokenSymbol_RMRK {
 
 export interface TokenSymbol_MOVR {
     __kind: 'MOVR'
+}
+
+export type GaugeState = GaugeState_Unbond | GaugeState_Bonded
+
+export interface GaugeState_Unbond {
+    __kind: 'Unbond'
+}
+
+export interface GaugeState_Bonded {
+    __kind: 'Bonded'
+}
+
+export type Type_652 = Type_652_UnCharged | Type_652_Charged | Type_652_Ongoing | Type_652_Dead | Type_652_Retired
+
+export interface Type_652_UnCharged {
+    __kind: 'UnCharged'
+}
+
+export interface Type_652_Charged {
+    __kind: 'Charged'
+}
+
+export interface Type_652_Ongoing {
+    __kind: 'Ongoing'
+}
+
+export interface Type_652_Dead {
+    __kind: 'Dead'
+}
+
+export interface Type_652_Retired {
+    __kind: 'Retired'
 }

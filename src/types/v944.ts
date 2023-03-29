@@ -42,6 +42,57 @@ export interface CurrencyId_ForeignAsset {
     value: number
 }
 
+export interface GaugeInfo {
+    who: Uint8Array
+    gaugeAmount: bigint
+    totalTimeFactor: bigint
+    latestTimeFactor: bigint
+    claimedTimeFactor: bigint
+    gaugeStartBlock: number
+    gaugeStopBlock: number
+    gaugeLastBlock: number
+    lastClaimBlock: number
+}
+
+export interface GaugePoolInfo {
+    pid: number
+    token: CurrencyId
+    keeper: Uint8Array
+    rewardIssuer: Uint8Array
+    rewards: [CurrencyId, [bigint, bigint, bigint]][]
+    gaugeBasicRewards: [CurrencyId, bigint][]
+    maxBlock: number
+    gaugeAmount: bigint
+    totalTimeFactor: bigint
+    gaugeState: GaugeState
+    gaugeLastBlock: number
+}
+
+export interface Type_628 {
+    tokensProportion: [CurrencyId, number][]
+    totalShares: bigint
+    basicRewards: [CurrencyId, bigint][]
+    rewards: [CurrencyId, [bigint, bigint]][]
+    state: Type_634
+    keeper: Uint8Array
+    rewardIssuer: Uint8Array
+    gauge: (number | undefined)
+    blockStartup: (number | undefined)
+    minDepositToStart: bigint
+    afterBlockToStart: number
+    withdrawLimitTime: number
+    claimLimitTime: number
+    withdrawLimitCount: number
+}
+
+export interface ShareInfo {
+    who: Uint8Array
+    share: bigint
+    withdrawnRewards: [CurrencyId, bigint][]
+    claimLastBlock: number
+    withdrawList: [number, bigint][]
+}
+
 export type TokenSymbol = TokenSymbol_ASG | TokenSymbol_BNC | TokenSymbol_KUSD | TokenSymbol_DOT | TokenSymbol_KSM | TokenSymbol_ETH | TokenSymbol_KAR | TokenSymbol_ZLK | TokenSymbol_PHA | TokenSymbol_RMRK | TokenSymbol_MOVR
 
 export interface TokenSymbol_ASG {
@@ -86,4 +137,36 @@ export interface TokenSymbol_RMRK {
 
 export interface TokenSymbol_MOVR {
     __kind: 'MOVR'
+}
+
+export type GaugeState = GaugeState_Unbond | GaugeState_Bonded
+
+export interface GaugeState_Unbond {
+    __kind: 'Unbond'
+}
+
+export interface GaugeState_Bonded {
+    __kind: 'Bonded'
+}
+
+export type Type_634 = Type_634_UnCharged | Type_634_Charged | Type_634_Ongoing | Type_634_Dead | Type_634_Retired
+
+export interface Type_634_UnCharged {
+    __kind: 'UnCharged'
+}
+
+export interface Type_634_Charged {
+    __kind: 'Charged'
+}
+
+export interface Type_634_Ongoing {
+    __kind: 'Ongoing'
+}
+
+export interface Type_634_Dead {
+    __kind: 'Dead'
+}
+
+export interface Type_634_Retired {
+    __kind: 'Retired'
 }

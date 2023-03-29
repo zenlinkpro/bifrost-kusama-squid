@@ -1,5 +1,23 @@
 import type {Result, Option} from './support'
 
+export interface Type_679 {
+    tokensProportion: [CurrencyId, number][]
+    basicToken: [CurrencyId, number]
+    totalShares: bigint
+    basicRewards: [CurrencyId, bigint][]
+    rewards: [CurrencyId, [bigint, bigint]][]
+    state: Type_685
+    keeper: Uint8Array
+    rewardIssuer: Uint8Array
+    gauge: (number | undefined)
+    blockStartup: (number | undefined)
+    minDepositToStart: bigint
+    afterBlockToStart: number
+    withdrawLimitTime: number
+    claimLimitTime: number
+    withdrawLimitCount: number
+}
+
 export type CurrencyId = CurrencyId_Native | CurrencyId_VToken | CurrencyId_Token | CurrencyId_Stable | CurrencyId_VSToken | CurrencyId_VSBond | CurrencyId_LPToken | CurrencyId_ForeignAsset | CurrencyId_Token2 | CurrencyId_VToken2 | CurrencyId_VSToken2 | CurrencyId_VSBond2 | CurrencyId_StableLpToken
 
 export interface CurrencyId_Native {
@@ -67,56 +85,26 @@ export interface CurrencyId_StableLpToken {
     value: number
 }
 
-export interface AssetMetadata {
-    name: Uint8Array
-    symbol: Uint8Array
-    decimals: number
-    minimalBalance: bigint
+export type Type_685 = Type_685_UnCharged | Type_685_Charged | Type_685_Ongoing | Type_685_Dead | Type_685_Retired
+
+export interface Type_685_UnCharged {
+    __kind: 'UnCharged'
 }
 
-export interface GaugePoolInfo {
-    pid: number
-    token: CurrencyId
-    keeper: Uint8Array
-    rewardIssuer: Uint8Array
-    rewards: [CurrencyId, [bigint, bigint, bigint]][]
-    gaugeBasicRewards: [CurrencyId, bigint][]
-    maxBlock: number
-    gaugeAmount: bigint
-    totalTimeFactor: bigint
-    gaugeState: GaugeState
-    gaugeLastBlock: number
+export interface Type_685_Charged {
+    __kind: 'Charged'
 }
 
-export interface Type_674 {
-    tokensProportion: [CurrencyId, number][]
-    totalShares: bigint
-    basicRewards: [CurrencyId, bigint][]
-    rewards: [CurrencyId, [bigint, bigint]][]
-    state: Type_680
-    keeper: Uint8Array
-    rewardIssuer: Uint8Array
-    gauge: (number | undefined)
-    blockStartup: (number | undefined)
-    minDepositToStart: bigint
-    afterBlockToStart: number
-    withdrawLimitTime: number
-    claimLimitTime: number
-    withdrawLimitCount: number
+export interface Type_685_Ongoing {
+    __kind: 'Ongoing'
 }
 
-export interface ShareInfo {
-    who: Uint8Array
-    share: bigint
-    withdrawnRewards: [CurrencyId, bigint][]
-    claimLastBlock: number
-    withdrawList: [number, bigint][]
+export interface Type_685_Dead {
+    __kind: 'Dead'
 }
 
-export interface Type_591 {
-    free: bigint
-    reserved: bigint
-    frozen: bigint
+export interface Type_685_Retired {
+    __kind: 'Retired'
 }
 
 export type TokenSymbol = TokenSymbol_ASG | TokenSymbol_BNC | TokenSymbol_KUSD | TokenSymbol_DOT | TokenSymbol_KSM | TokenSymbol_ETH | TokenSymbol_KAR | TokenSymbol_ZLK | TokenSymbol_PHA | TokenSymbol_RMRK | TokenSymbol_MOVR
@@ -163,36 +151,4 @@ export interface TokenSymbol_RMRK {
 
 export interface TokenSymbol_MOVR {
     __kind: 'MOVR'
-}
-
-export type GaugeState = GaugeState_Unbond | GaugeState_Bonded
-
-export interface GaugeState_Unbond {
-    __kind: 'Unbond'
-}
-
-export interface GaugeState_Bonded {
-    __kind: 'Bonded'
-}
-
-export type Type_680 = Type_680_UnCharged | Type_680_Charged | Type_680_Ongoing | Type_680_Dead | Type_680_Retired
-
-export interface Type_680_UnCharged {
-    __kind: 'UnCharged'
-}
-
-export interface Type_680_Charged {
-    __kind: 'Charged'
-}
-
-export interface Type_680_Ongoing {
-    __kind: 'Ongoing'
-}
-
-export interface Type_680_Dead {
-    __kind: 'Dead'
-}
-
-export interface Type_680_Retired {
-    __kind: 'Retired'
 }
