@@ -307,6 +307,7 @@ export async function updateFarmingPoolInfo(
     if(!singleTokenLock) {
       singleTokenLock = new SingleTokenLock({
         id: token.id,
+        token: token,
         totalLiquidity: '0',
         totalLiquidityETH: '0',
         totalLiquidityUSD: '0'
