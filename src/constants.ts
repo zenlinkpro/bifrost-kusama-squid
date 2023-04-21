@@ -15,8 +15,10 @@ export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2001-2-2048': { name: 'USDT', symbol: 'USDT', decimals: 6 },
 }
 
+export const CHAIN_ID = 2001
+
 export const ZLK_ASSET_ID: AssetId = {
-  chainId: 2001,
+  chainId: CHAIN_ID,
   assetType: 2,
   assetIndex: 519n
 }

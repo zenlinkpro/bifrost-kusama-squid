@@ -2,10 +2,12 @@ import { ZERO_BD } from "../constants";
 import { Bundle, Factory, Pair } from "../model";
 import { EventHandlerContext } from "../types";
 import { AssetId } from "../types/v906";
+import { sortAssets } from "../utils/sort";
 import { addressFromAsset, getPairAssetIdFromAssets } from "../utils/token";
 import { getOrCreateToken } from "./token";
 
-export async function getPair(ctx: EventHandlerContext, assets: [AssetId, AssetId]) {
+export async function getPair(ctx: EventHandlerContext, _assets: [AssetId, AssetId]) {
+  const assets = sortAssets(_assets)
   let factory = await ctx.store.get(Factory, '1')
   if (!factory) {
     factory = new Factory({
