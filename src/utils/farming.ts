@@ -9,6 +9,7 @@ import { EventHandlerContext } from "../types"
 import { FarmingAllForceGaugeClaimedEvent, FarmingAllRetiredEvent, FarmingChargedEvent, FarmingClaimedEvent, FarmingDepositedEvent, FarmingFarmingPoolClosedEvent, FarmingFarmingPoolCreatedEvent, FarmingFarmingPoolEditedEvent, FarmingFarmingPoolKilledEvent, FarmingFarmingPoolResetEvent, FarmingGaugeWithdrawnEvent, FarmingPartiallyForceGaugeClaimedEvent, FarmingPartiallyRetiredEvent, FarmingRetireLimitSetEvent, FarmingWithdrawClaimedEvent, FarmingWithdrawnEvent } from "../types/events"
 import { FarmingPoolInfosStorage, FarmingSharesAndWithdrawnRewardsStorage } from "../types/storage"
 import { convertTokenToDecimal, getTimePerBlock } from "./helpers";
+import { sortAssets } from "./sort";
 import { addressFromAsset, currencyIdToAssetIndex, getPairAssetIdFromAssets, invertedTokenSymbolMap, parseToTokenIndex } from "./token";
 
 export function formatFarmingCreatedPoolEvent(ctx: EventHandlerContext){
@@ -254,8 +255,9 @@ export async function updateFarmingPoolInfo(
     const [token0Symbol, token0Id, token1Symbol, token1Id] = farmingToken.value
     const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
     const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-    const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-    const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+    const _asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
+    const _asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+    const [asset0, asset1] = sortAssets([_asset0, _asset1])
     let pair = await getPair(ctx, [asset0, asset1])
     if(pair) {
       await handleLiquiditySync(ctx, pair)
@@ -461,8 +463,9 @@ export async function killFarmingPoolInfo(
     const [token0Symbol, token0Id, token1Symbol, token1Id] = farmingToken.value
     const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
     const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-    const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-    const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+    const _asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
+    const _asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+    const [asset0, asset1] = sortAssets([_asset0, _asset1])
     let pair = await getPair(ctx, [asset0, asset1])
     if(pair) {
       await handleLiquiditySync(ctx, pair)
