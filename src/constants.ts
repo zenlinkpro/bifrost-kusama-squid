@@ -3,6 +3,8 @@ import { Big as BigDecimal } from 'big.js'
 import { AssetId } from "./types/v906";
 import { zenlinkAssetIdToCurrencyId } from "./utils/token";
 
+export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://bifrost-parachain.api.onfinality.io/public-ws'
+
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2001-0-0': { name: 'Bifrost', symbol: 'BNC', decimals: 12 },
   '2001-2-770': { name: 'Karura Dollar', symbol: 'aUSD', decimals: 12 },
