@@ -30,6 +30,7 @@ import {
   updateTokenDayData,
   updateZenlinkInfo
 } from "../utils/updates";
+import { getOrCreateToken } from "../entities/token";
 
 export async function handleLiquiditySync(ctx: EventHandlerContext, pair: Pair) {
   const bundle = (await ctx.store.get(Bundle, '1'))!
@@ -286,8 +287,9 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
   const to = codec(config.prefix).encode(event[1])
 
   for (let i = 1; i < path.length; i++) {
-    const asset0 = path[i - 1]
-    const asset1 = path[i]
+    const inputAsset = path[i - 1]
+    const outputAsset = path[i]
+    const [asset0, asset1] = sortAssets([inputAsset, outputAsset])
 
     const pair = await getPair(ctx, [asset0, asset1])
 
@@ -299,13 +301,17 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
     const bundle = (await ctx.store.get(Bundle, '1'))!
 
     const { token0, token1 } = pair
+    const inputToken = await getOrCreateToken(ctx, inputAsset)
+    // const outputToken = await getOrCreateToken(ctx, outputAsset)
+    const [amount0, amount1] = inputToken?.id === token0.id ? [amounts[i - 1], amounts[i]] : [amounts[i], amounts[i - 1]]
 
-    const amount0In = convertTokenToDecimal(amounts[i - 1], token0.decimals)
-    const amount0Out = convertTokenToDecimal(0n, token0.decimals)
+
+    const amount0In = convertTokenToDecimal(amount0, token0.decimals)
+    const amount0Out = convertTokenToDecimal(0n, token1.decimals)
     const amount0Total = amount0Out.plus(amount0In)
 
     const amount1In = convertTokenToDecimal(0n, token1.decimals)
-    const amount1Out = convertTokenToDecimal(amounts[i], token1.decimals)
+    const amount1Out = convertTokenToDecimal(amount1, token1.decimals)
     const amount1Total = amount1Out.plus(amount1In)
 
     // get total amounts of derived USD and ETH for tracking

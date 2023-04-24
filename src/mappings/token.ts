@@ -1,7 +1,7 @@
 import { codec } from '@subsquid/ss58'
 import { getPair } from "../entities/pair";
 import { getPosition, getTransaction } from "../entities/utils";
-import { ZERO_BD } from '../constants';
+import { CHAIN_ID, ZERO_BD } from '../constants';
 import { EventHandlerContext, TOEKN_EVENT_TYPE } from "../types";
 import { config } from "../config";
 import { Big as BigDecimal } from 'big.js'
@@ -72,8 +72,8 @@ export async function handleTokenDeposited(ctx: EventHandlerContext, type: TOEKN
 
   const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
   const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-  const asset0 = { chainId: 2001, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: 2001, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
+  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
@@ -164,8 +164,8 @@ export async function handleTokenWithdrawn(ctx: EventHandlerContext, type: TOEKN
 
   const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
   const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-  const asset0 = { chainId: 2001, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: 2001, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
+  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return
@@ -298,8 +298,8 @@ export async function handleTokenTransfer(ctx: EventHandlerContext, type: TOEKN_
   const [token0Symbol, token0Id, token1Symbol, token1Id] = event.currencyId.value
   const token0Index = parseToTokenIndex(token0Id, Number(invertedTokenSymbolMap[token0Symbol.__kind]))
   const token1Index = parseToTokenIndex(token1Id, Number(invertedTokenSymbolMap[token1Symbol.__kind]))
-  const asset0 = { chainId: 2001, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
-  const asset1 = { chainId: 2001, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
+  const asset0 = { chainId: CHAIN_ID, assetType: token0Index === 0 ? 0 : 2, assetIndex: BigInt(token0Index) }
+  const asset1 = { chainId: CHAIN_ID, assetType: token1Index === 0 ? 0 : 2, assetIndex: BigInt(token1Index) }
 
   const pair = await getPair(ctx, [asset0, asset1])
   if (!pair) return

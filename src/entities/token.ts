@@ -32,6 +32,9 @@ export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId)
           decimals: result.decimals
         }
       }
+      if(!metaddata) {
+        metaddata = TOKEN_METADATA_MAP[address]
+      }
     }
 
     if (!metaddata) return undefined
