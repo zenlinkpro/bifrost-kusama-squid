@@ -233,7 +233,11 @@ export async function getTokenBalance(
   let result
   if (assetId.__kind === 'Native') {
     const systemAccountStorate = new SystemAccountStorage(ctx, ctx.block)
-    result = (await systemAccountStorate.asV1.get(account)).data
+    if (systemAccountStorate.isV1) {
+      result = (await systemAccountStorate.asV1.get(account)).data
+    } else if (systemAccountStorate.isV978) {
+      result = (await systemAccountStorate.asV978.get(account)).data
+    }
   } else {
     const tokenAccountsStorage = new TokensAccountsStorage(ctx, ctx.block)
     if (tokenAccountsStorage.isV802) {
@@ -295,7 +299,11 @@ export async function getTokenBurned(
   let result
   if (assetId.__kind === 'Native') {
     const systemAccountStorate = new SystemAccountStorage(ctx, block)
-    result = (await systemAccountStorate.asV1.get(account)).data
+    if (systemAccountStorate.isV1) {
+      result = (await systemAccountStorate.asV1.get(account)).data
+    } else if (systemAccountStorate.isV978) {
+      result = (await systemAccountStorate.asV978.get(account)).data
+    }
   } else {
     const tokenAccountsStorage = new TokensAccountsStorage(ctx, block)
     if (tokenAccountsStorage.isV802) {

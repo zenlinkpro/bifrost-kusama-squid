@@ -7,7 +7,7 @@ export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://bifros
 
 export const TOKEN_METADATA_MAP: { [address: string]: TokenBase } = {
   '2001-0-0': { name: 'Bifrost', symbol: 'BNC', decimals: 12 },
-  '2001-2-770': { name: 'Karura Dollar', symbol: 'aUSD', decimals: 12 },
+  '2001-2-770': { name: 'aUSD SEED', symbol: 'aSEED', decimals: 12 },
   '2001-2-516': { name: 'Kusama', symbol: 'KSM', decimals: 12 },
   '2001-2-519': { name: 'Zenlink Network Token', symbol: 'ZLK', decimals: 18 },
   '2001-2-518': { name: 'Karura', symbol: 'KAR', decimals: 12 },
