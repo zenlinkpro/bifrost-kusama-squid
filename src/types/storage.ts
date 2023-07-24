@@ -11,6 +11,7 @@ import * as v944 from './v944'
 import * as v956 from './v956'
 import * as v962 from './v962'
 import * as v968 from './v968'
+import * as v978 from './v978'
 
 export class AssetRegistryCurrencyMetadatasStorage extends StorageBase {
     protected getPrefix() {
@@ -621,6 +622,21 @@ export class SystemAccountStorage extends StorageBase {
         assert(this.isV1)
         return this as any
     }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get isV978(): boolean {
+        return this.getTypeHash() === 'd6b7a816e0cf6dc8f60cb2bd55c5c5ae7ad928521a6e98aafbe6e954f5c54878'
+    }
+
+    /**
+     *  The full account information for a particular account ID.
+     */
+    get asV978(): SystemAccountStorageV978 {
+        assert(this.isV978)
+        return this as any
+    }
 }
 
 /**
@@ -638,6 +654,23 @@ export interface SystemAccountStorageV1 {
     getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v1.AccountInfo][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v1.AccountInfo][]>
     getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v1.AccountInfo][]>
+}
+
+/**
+ *  The full account information for a particular account ID.
+ */
+export interface SystemAccountStorageV978 {
+    get(key: Uint8Array): Promise<v978.AccountInfo>
+    getAll(): Promise<v978.AccountInfo[]>
+    getMany(keys: Uint8Array[]): Promise<v978.AccountInfo[]>
+    getKeys(): Promise<Uint8Array[]>
+    getKeys(key: Uint8Array): Promise<Uint8Array[]>
+    getKeysPaged(pageSize: number): AsyncIterable<Uint8Array[]>
+    getKeysPaged(pageSize: number, key: Uint8Array): AsyncIterable<Uint8Array[]>
+    getPairs(): Promise<[k: Uint8Array, v: v978.AccountInfo][]>
+    getPairs(key: Uint8Array): Promise<[k: Uint8Array, v: v978.AccountInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: Uint8Array, v: v978.AccountInfo][]>
+    getPairsPaged(pageSize: number, key: Uint8Array): AsyncIterable<[k: Uint8Array, v: v978.AccountInfo][]>
 }
 
 export class SystemBlockHashStorage extends StorageBase {
