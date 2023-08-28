@@ -20,6 +20,7 @@ import * as v956 from '../types/v956'
 import * as v962 from '../types/v962'
 import * as v980 from '../types/v980'
 import { CurrencyId, TokenSymbol } from "../types/v980";
+import { sortAssets } from "./sort";
 
 export const currencyKeyMap: { [index: number]: string } = {
   0: 'Native',
@@ -140,10 +141,9 @@ export function currencyIdToAssetIndex(currency: CurrencyId): number  {
 
   if(TokenIndexMap[tokenType]) {
     tokenIndex = currency.value as number
-    return tokenIndex
+  } else {
+    tokenIndex = CurrencyIndexEnum[((currency.value) as TokenSymbol).__kind]
   }
-
-  tokenIndex = CurrencyIndexEnum[((currency.value) as TokenSymbol).__kind]
 
   const assetIdIndex = parseToTokenIndex(tokenType, tokenIndex);
   return assetIdIndex
@@ -177,8 +177,9 @@ const pairAssetIds = new Map<string, AssetId>()
 
 export async function getPairAssetIdFromAssets(
   ctx: EventHandlerContext,
-  assets: [AssetId, AssetId]
+  _assets: [AssetId, AssetId]
 ) {
+  const assets = sortAssets(_assets)
   const [asset0, asset1] = assets
   const token0Address = addressFromAsset(asset0)
   const token1Address = addressFromAsset(asset1)
@@ -304,7 +305,11 @@ export async function getTokenBurned(
   let result
   if (assetId.__kind === 'Native') {
     const systemAccountStorate = new SystemAccountStorage(ctx, block)
-    result = (await systemAccountStorate.asV1.get(account)).data
+    if (systemAccountStorate.isV1) {
+      result = (await systemAccountStorate.asV1.get(account)).data
+    } else if (systemAccountStorate.isV978) {
+      result = (await systemAccountStorate.asV978.get(account)).data
+    }
   } else {
     const tokenAccountsStorage = new TokensAccountsStorage(ctx, block)
     if (tokenAccountsStorage.isV802) {

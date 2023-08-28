@@ -6,6 +6,8 @@ description: |-
 build:
 
 deploy:
+  secrets:
+    - BIFROST_KUSAMA_CHAIN_NODE
   addons:
     postgres:
   processor:

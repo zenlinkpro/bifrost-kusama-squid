@@ -1,6 +1,6 @@
 import { EventHandlerContext } from "../../types";
 import { FarmingFarmingPoolCreatedEvent, TokensBalanceSetEvent } from "../../types/events";
-import { formatFarmingAllForceGaugeClaimedEvent, formatFarmingAllRetiredEvent, formatFarmingChargedEvent, formatFarmingClaimedEvent, formatFarmingCreatedPoolEvent, formatFarmingDepositedEvent, formatFarmingGaugeWithdrawnEvent, formatFarmingPartiallyForceGaugeClaimedEvent, formatFarmingPartiallyRetiredEvent, formatFarmingPoolClosedEvent, formatFarmingPoolEditedEvent, formatFarmingPoolKilledEvent, formatFarmingPoolResetEvent, formatFarmingRetireLimitSetEvent, formatFarmingWithdrawClaimedEvent, formatFarmingWithdrawnEvent, getFamingPoolInfo, updateFarmingPoolInfo } from "../../utils/farming";
+import { formatFarmingAllForceGaugeClaimedEvent, formatFarmingAllRetiredEvent, formatFarmingChargedEvent, formatFarmingClaimedEvent, formatFarmingCreatedPoolEvent, formatFarmingDepositedEvent, formatFarmingGaugeWithdrawnEvent, formatFarmingPartiallyForceGaugeClaimedEvent, formatFarmingPartiallyRetiredEvent, formatFarmingPoolClosedEvent, formatFarmingPoolEditedEvent, formatFarmingPoolKilledEvent, formatFarmingPoolResetEvent, formatFarmingRetireLimitSetEvent, formatFarmingWithdrawClaimedEvent, formatFarmingWithdrawnEvent, getFamingPoolInfo, killFarmingPoolInfo, updateFarmingPoolInfo } from "../../utils/farming";
 import { getStakePosition } from "../../entities/farming";
 import { getUser } from "../../entities/user";
 import { Farm } from "../../model";
@@ -26,7 +26,7 @@ export async function handleFarmingPoolKilled(ctx: EventHandlerContext) {
   const event = formatFarmingPoolKilledEvent(ctx)
   if(!event) return
   const pid = event.pid;
-  await handleSyncFamingPoolInfo(ctx, pid);
+  await killFarmingPoolInfo(ctx, pid);
 }
 
 export async function handleFarmingPoolClosed(ctx: EventHandlerContext) {

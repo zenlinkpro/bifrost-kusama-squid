@@ -1,3 +1,4 @@
+import { CHAIN_NODE } from "./constants";
 import { ProcessorConfig } from "./types";
 
 export const config: ProcessorConfig = {
@@ -5,6 +6,6 @@ export const config: ProcessorConfig = {
   prefix: 'bifrost',
   dataSource: {
     archive: 'https://bifrost.archive.subsquid.io/graphql',
-    chain: 'wss://bifrost-parachain.api.onfinality.io/public-ws',
+    chain: CHAIN_NODE,
   },
 }
