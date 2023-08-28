@@ -1,6 +1,6 @@
 manifestVersion: subsquid.io/v0.1
 name: zenlink-bifrost-kusama-squid
-version: 3
+version: 5
 description: |-
   Zenlink Bifrost(Kusama) Squid
 build:

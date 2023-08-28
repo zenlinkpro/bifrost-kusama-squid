@@ -159,6 +159,8 @@ export async function getFamingPoolInfo(
     result = await farmingPoolInfoStorage.asV962.get(pid)
   } else if (farmingPoolInfoStorage.isV968) {
     result = await farmingPoolInfoStorage.asV968.get(pid)
+  } else if (farmingPoolInfoStorage.isV980) {
+    result = await farmingPoolInfoStorage.asV980.get(pid)
   }
   return result
 }
@@ -177,6 +179,8 @@ export async function getFamingSharesAndWithdrawnRewards(
     result = await storage.asV956.get(pid, user)
   } else if (storage.isV962) {
     result = await storage.asV962.get(pid, user)
+  } else if (storage.isV980) {
+    result = await storage.asV980.get(pid, user)
   }
   return result
 }
