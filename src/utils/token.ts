@@ -35,7 +35,8 @@ export const currencyKeyMap: { [index: number]: string } = {
   9: 'VToken2',
   10: 'VSToken2',
   11: 'VSBond2',
-  12: 'StableLpToken'
+  12: 'StableLpToken',
+  13: 'BLP'
 };
 
 export enum CurrencyTypeEnum {
