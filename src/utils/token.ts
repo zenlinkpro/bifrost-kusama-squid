@@ -75,7 +75,8 @@ export const TokenIndexMap: { [index: number]: string } = {
   8: 'Token2',
   9: 'VToken2',
   10: 'VSToken2',
-  12: 'StableLpToken'
+  12: 'StableLpToken',
+  13: 'BLP'
 };
 
 export const currencyTokenSymbolMap: { [index: number]: string } = {
@@ -145,7 +146,7 @@ export function currencyIdToAssetIndex(currency: CurrencyId): number  {
   } else {
     tokenIndex = CurrencyIndexEnum[((currency.value) as TokenSymbol).__kind]
   }
-
+  
   const assetIdIndex = parseToTokenIndex(tokenType, tokenIndex);
   return assetIdIndex
 }
