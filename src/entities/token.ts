@@ -6,6 +6,7 @@ import { AssetId } from "../types/v906";
 import { addressFromAsset, getTotalIssuance, u8a2s, zenlinkAssetIdToCurrencyId } from "../utils/token";
 import * as v956 from '../types/v956'
 import * as v962 from '../types/v962'
+import * as v980 from '../types/v980'
 
 export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId): Promise<Token | undefined> {
   const address = addressFromAsset(asset)
@@ -23,7 +24,9 @@ export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId)
         ? await metadataStorage.asV956.get(currencyId as v956.CurrencyId)
         : metadataStorage.isV962
           ? await metadataStorage.asV962.get(currencyId as v962.CurrencyId)
-          : undefined
+          : metadataStorage.isV980
+            ? await metadataStorage.asV980.get(currencyId as v980.CurrencyId)
+            : undefined
 
       if (result) {
         metaddata = {
@@ -32,7 +35,7 @@ export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId)
           decimals: result.decimals
         }
       }
-      if(!metaddata) {
+      if (!metaddata) {
         metaddata = TOKEN_METADATA_MAP[address]
       }
     }
