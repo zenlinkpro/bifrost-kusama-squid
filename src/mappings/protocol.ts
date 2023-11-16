@@ -491,6 +491,12 @@ export async function handleTokensBalanceSet(ctx: EventHandlerContext) {
     event = _event.asV925
   } else if (_event.isV932) {
     event = _event.asV932
+  } else if (_event.isV956) {
+    event = _event.asV956
+  } else if (_event.isV962) {
+    event = _event.asV962
+  } else if (_event.isV980) {
+    event = _event.asV980
   }
 
   if (
