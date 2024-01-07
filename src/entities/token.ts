@@ -7,6 +7,7 @@ import { addressFromAsset, getTotalIssuance, u8a2s, zenlinkAssetIdToCurrencyId }
 import * as v956 from '../types/v956'
 import * as v962 from '../types/v962'
 import * as v980 from '../types/v980'
+import * as v990 from '../types/v990'
 
 export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId): Promise<Token | undefined> {
   const address = addressFromAsset(asset)
@@ -20,13 +21,16 @@ export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId)
       metaddata = TOKEN_METADATA_MAP[address]
     } else {
       const currencyId = zenlinkAssetIdToCurrencyId(asset)
-      const result = metadataStorage.isV956
-        ? await metadataStorage.asV956.get(currencyId as v956.CurrencyId)
-        : metadataStorage.isV962
-          ? await metadataStorage.asV962.get(currencyId as v962.CurrencyId)
-          : metadataStorage.isV980
-            ? await metadataStorage.asV980.get(currencyId as v980.CurrencyId)
-            : undefined
+      let result
+      if (metadataStorage.isV956) {
+        result = await metadataStorage.asV956.get(currencyId as v956.CurrencyId)
+      } else if (metadataStorage.isV962) {
+        result = await metadataStorage.asV962.get(currencyId as v962.CurrencyId)
+      } else if (metadataStorage.isV980) {
+        result = await metadataStorage.asV980.get(currencyId as v980.CurrencyId)
+      } else if (metadataStorage.isV990) {
+        result = await metadataStorage.asV990.get(currencyId as v990.CurrencyId)
+      }
 
       if (result) {
         metaddata = {
