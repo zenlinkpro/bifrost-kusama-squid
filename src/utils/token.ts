@@ -19,7 +19,8 @@ import * as v932 from '../types/v932'
 import * as v956 from '../types/v956'
 import * as v962 from '../types/v962'
 import * as v980 from '../types/v980'
-import { CurrencyId, TokenSymbol } from "../types/v980";
+import * as v990 from '../types/v990'
+import { CurrencyId, TokenSymbol } from "../types/v990";
 import { sortAssets } from "./sort";
 
 export const currencyKeyMap: { [index: number]: string } = {
@@ -36,7 +37,8 @@ export const currencyKeyMap: { [index: number]: string } = {
   10: 'VSToken2',
   11: 'VSBond2',
   12: 'StableLpToken',
-  13: 'BLP'
+  13: 'BLP',
+  14: 'Lend'
 };
 
 export enum CurrencyTypeEnum {
@@ -54,6 +56,7 @@ export enum CurrencyTypeEnum {
   VSBond2 = 11, 
   StableLpToken = 12,
   BLP = 13,
+  Lend = 14
 };
 
 export enum CurrencyIndexEnum {
@@ -76,7 +79,8 @@ export const TokenIndexMap: { [index: number]: string } = {
   9: 'VToken2',
   10: 'VSToken2',
   12: 'StableLpToken',
-  13: 'BLP'
+  13: 'BLP',
+  14: 'Lend'
 };
 
 export const currencyTokenSymbolMap: { [index: number]: string } = {
@@ -260,7 +264,9 @@ export async function getTokenBalance(
       result = await tokenAccountsStorage.asV962.get(account, assetId as v962.CurrencyId)
     } else if (tokenAccountsStorage.isV980) {
       result = await tokenAccountsStorage.asV980.get(account, assetId as v980.CurrencyId)
-    } 
+    } else if (tokenAccountsStorage.isV990) {
+      result = await tokenAccountsStorage.asV990.get(account, assetId as v990.CurrencyId)
+    }
   }
 
   return result?.free
@@ -289,6 +295,8 @@ export async function getTotalIssuance(ctx: EventHandlerContext, assetId: v962.C
       result = await tokenIssuanceStorage.asV962.get(assetId as v962.CurrencyId)
     } else if (tokenIssuanceStorage.isV980) {
       result = await tokenIssuanceStorage.asV980.get(assetId as v962.CurrencyId)
+    } else if (tokenIssuanceStorage.isV990) {
+      result = await tokenIssuanceStorage.asV990.get(assetId as v990.CurrencyId)
     }
   }
 
@@ -330,6 +338,8 @@ export async function getTokenBurned(
       result = await tokenAccountsStorage.asV962.get(account, assetId as v962.CurrencyId)
     } else if (tokenAccountsStorage.isV980) {
       result = await tokenAccountsStorage.asV980.get(account, assetId as v962.CurrencyId)
+    } else if (tokenAccountsStorage.isV990) {
+      result = await tokenAccountsStorage.asV990.get(account, assetId as v990.CurrencyId)
     }
   }
 

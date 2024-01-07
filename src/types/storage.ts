@@ -13,6 +13,7 @@ import * as v962 from './v962'
 import * as v968 from './v968'
 import * as v978 from './v978'
 import * as v980 from './v980'
+import * as v990 from './v990'
 
 export class AssetRegistryCurrencyMetadatasStorage extends StorageBase {
     protected getPrefix() {
@@ -79,6 +80,25 @@ export class AssetRegistryCurrencyMetadatasStorage extends StorageBase {
         assert(this.isV980)
         return this as any
     }
+
+    /**
+     *  The storages for AssetMetadata.
+     * 
+     *  CurrencyMetadatas: map CurrencyId => Option<AssetMetadata>
+     */
+    get isV990(): boolean {
+        return this.getTypeHash() === 'a9434230f4211abf71a876e5ec7d8940ad23245c37ffbfdf1cc014ae68caa915'
+    }
+
+    /**
+     *  The storages for AssetMetadata.
+     * 
+     *  CurrencyMetadatas: map CurrencyId => Option<AssetMetadata>
+     */
+    get asV990(): AssetRegistryCurrencyMetadatasStorageV990 {
+        assert(this.isV990)
+        return this as any
+    }
 }
 
 /**
@@ -136,6 +156,25 @@ export interface AssetRegistryCurrencyMetadatasStorageV980 {
     getPairs(key: v980.CurrencyId): Promise<[k: v980.CurrencyId, v: v980.AssetMetadata][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: v980.CurrencyId, v: v980.AssetMetadata][]>
     getPairsPaged(pageSize: number, key: v980.CurrencyId): AsyncIterable<[k: v980.CurrencyId, v: v980.AssetMetadata][]>
+}
+
+/**
+ *  The storages for AssetMetadata.
+ * 
+ *  CurrencyMetadatas: map CurrencyId => Option<AssetMetadata>
+ */
+export interface AssetRegistryCurrencyMetadatasStorageV990 {
+    get(key: v990.CurrencyId): Promise<(v990.AssetMetadata | undefined)>
+    getAll(): Promise<v990.AssetMetadata[]>
+    getMany(keys: v990.CurrencyId[]): Promise<(v990.AssetMetadata | undefined)[]>
+    getKeys(): Promise<v990.CurrencyId[]>
+    getKeys(key: v990.CurrencyId): Promise<v990.CurrencyId[]>
+    getKeysPaged(pageSize: number): AsyncIterable<v990.CurrencyId[]>
+    getKeysPaged(pageSize: number, key: v990.CurrencyId): AsyncIterable<v990.CurrencyId[]>
+    getPairs(): Promise<[k: v990.CurrencyId, v: v990.AssetMetadata][]>
+    getPairs(key: v990.CurrencyId): Promise<[k: v990.CurrencyId, v: v990.AssetMetadata][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: v990.CurrencyId, v: v990.AssetMetadata][]>
+    getPairsPaged(pageSize: number, key: v990.CurrencyId): AsyncIterable<[k: v990.CurrencyId, v: v990.AssetMetadata][]>
 }
 
 export class BalancesTotalIssuanceStorage extends StorageBase {
@@ -291,6 +330,25 @@ export class FarmingGaugePoolInfosStorage extends StorageBase {
         assert(this.isV980)
         return this as any
     }
+
+    /**
+     *  Record gauge farming pool info.
+     * 
+     *  map PoolId => GaugePoolInfo
+     */
+    get isV990(): boolean {
+        return this.getTypeHash() === '695ebd6efb0e92c33eecec56990e10d0a2bbf8b27f3c9f7fb2cdb960ba775098'
+    }
+
+    /**
+     *  Record gauge farming pool info.
+     * 
+     *  map PoolId => GaugePoolInfo
+     */
+    get asV990(): FarmingGaugePoolInfosStorageV990 {
+        assert(this.isV990)
+        return this as any
+    }
 }
 
 /**
@@ -367,6 +425,25 @@ export interface FarmingGaugePoolInfosStorageV980 {
     getPairs(key: number): Promise<[k: number, v: v980.GaugePoolInfo][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: v980.GaugePoolInfo][]>
     getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: v980.GaugePoolInfo][]>
+}
+
+/**
+ *  Record gauge farming pool info.
+ * 
+ *  map PoolId => GaugePoolInfo
+ */
+export interface FarmingGaugePoolInfosStorageV990 {
+    get(key: number): Promise<(v990.GaugePoolInfo | undefined)>
+    getAll(): Promise<v990.GaugePoolInfo[]>
+    getMany(keys: number[]): Promise<(v990.GaugePoolInfo | undefined)[]>
+    getKeys(): Promise<number[]>
+    getKeys(key: number): Promise<number[]>
+    getKeysPaged(pageSize: number): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
+    getPairs(): Promise<[k: number, v: v990.GaugePoolInfo][]>
+    getPairs(key: number): Promise<[k: number, v: v990.GaugePoolInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: v990.GaugePoolInfo][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: v990.GaugePoolInfo][]>
 }
 
 export class FarmingPoolInfosStorage extends StorageBase {
@@ -472,6 +549,25 @@ export class FarmingPoolInfosStorage extends StorageBase {
         assert(this.isV980)
         return this as any
     }
+
+    /**
+     *  Record reward pool info.
+     * 
+     *  map PoolId => PoolInfo
+     */
+    get isV990(): boolean {
+        return this.getTypeHash() === '5376091b7b73a355fda2b818b980e5527c2b6ea387d05ad709fca73eb239530e'
+    }
+
+    /**
+     *  Record reward pool info.
+     * 
+     *  map PoolId => PoolInfo
+     */
+    get asV990(): FarmingPoolInfosStorageV990 {
+        assert(this.isV990)
+        return this as any
+    }
 }
 
 /**
@@ -569,6 +665,25 @@ export interface FarmingPoolInfosStorageV980 {
     getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: v980.PoolInfo][]>
 }
 
+/**
+ *  Record reward pool info.
+ * 
+ *  map PoolId => PoolInfo
+ */
+export interface FarmingPoolInfosStorageV990 {
+    get(key: number): Promise<(v990.PoolInfo | undefined)>
+    getAll(): Promise<v990.PoolInfo[]>
+    getMany(keys: number[]): Promise<(v990.PoolInfo | undefined)[]>
+    getKeys(): Promise<number[]>
+    getKeys(key: number): Promise<number[]>
+    getKeysPaged(pageSize: number): AsyncIterable<number[]>
+    getKeysPaged(pageSize: number, key: number): AsyncIterable<number[]>
+    getPairs(): Promise<[k: number, v: v990.PoolInfo][]>
+    getPairs(key: number): Promise<[k: number, v: v990.PoolInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: number, v: v990.PoolInfo][]>
+    getPairsPaged(pageSize: number, key: number): AsyncIterable<[k: number, v: v990.PoolInfo][]>
+}
+
 export class FarmingSharesAndWithdrawnRewardsStorage extends StorageBase {
     protected getPrefix() {
         return 'Farming'
@@ -659,6 +774,27 @@ export class FarmingSharesAndWithdrawnRewardsStorage extends StorageBase {
      */
     get asV980(): FarmingSharesAndWithdrawnRewardsStorageV980 {
         assert(this.isV980)
+        return this as any
+    }
+
+    /**
+     *  Record share amount, reward currency and withdrawn reward amount for
+     *  specific `AccountId` under `PoolId`.
+     * 
+     *  double_map (PoolId, AccountId) => ShareInfo
+     */
+    get isV990(): boolean {
+        return this.getTypeHash() === '6b98d1b43015156b4532b8347cb0a1e43cf56c5f0132369d896aa4c924b62c99'
+    }
+
+    /**
+     *  Record share amount, reward currency and withdrawn reward amount for
+     *  specific `AccountId` under `PoolId`.
+     * 
+     *  double_map (PoolId, AccountId) => ShareInfo
+     */
+    get asV990(): FarmingSharesAndWithdrawnRewardsStorageV990 {
+        assert(this.isV990)
         return this as any
     }
 }
@@ -757,6 +893,30 @@ export interface FarmingSharesAndWithdrawnRewardsStorageV980 {
     getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array], v: v980.ShareInfo][]>
     getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array], v: v980.ShareInfo][]>
     getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array], v: v980.ShareInfo][]>
+}
+
+/**
+ *  Record share amount, reward currency and withdrawn reward amount for
+ *  specific `AccountId` under `PoolId`.
+ * 
+ *  double_map (PoolId, AccountId) => ShareInfo
+ */
+export interface FarmingSharesAndWithdrawnRewardsStorageV990 {
+    get(key1: number, key2: Uint8Array): Promise<(v990.ShareInfo | undefined)>
+    getAll(): Promise<v990.ShareInfo[]>
+    getMany(keys: [number, Uint8Array][]): Promise<(v990.ShareInfo | undefined)[]>
+    getKeys(): Promise<[number, Uint8Array][]>
+    getKeys(key1: number): Promise<[number, Uint8Array][]>
+    getKeys(key1: number, key2: Uint8Array): Promise<[number, Uint8Array][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[number, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: number): AsyncIterable<[number, Uint8Array][]>
+    getKeysPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[number, Uint8Array][]>
+    getPairs(): Promise<[k: [number, Uint8Array], v: v990.ShareInfo][]>
+    getPairs(key1: number): Promise<[k: [number, Uint8Array], v: v990.ShareInfo][]>
+    getPairs(key1: number, key2: Uint8Array): Promise<[k: [number, Uint8Array], v: v990.ShareInfo][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [number, Uint8Array], v: v990.ShareInfo][]>
+    getPairsPaged(pageSize: number, key1: number): AsyncIterable<[k: [number, Uint8Array], v: v990.ShareInfo][]>
+    getPairsPaged(pageSize: number, key1: number, key2: Uint8Array): AsyncIterable<[k: [number, Uint8Array], v: v990.ShareInfo][]>
 }
 
 export class SystemAccountStorage extends StorageBase {
@@ -1115,6 +1275,31 @@ export class TokensAccountsStorage extends StorageBase {
         assert(this.isV980)
         return this as any
     }
+
+    /**
+     *  The balance of a token type under an account.
+     * 
+     *  NOTE: If the total is ever zero, decrease account ref account.
+     * 
+     *  NOTE: This is only used in the case that this module is used to store
+     *  balances.
+     */
+    get isV990(): boolean {
+        return this.getTypeHash() === '8cc77164ed8e7adcdc1bd4ab182c75d34eb05db6109046216328fd1df73c9c6b'
+    }
+
+    /**
+     *  The balance of a token type under an account.
+     * 
+     *  NOTE: If the total is ever zero, decrease account ref account.
+     * 
+     *  NOTE: This is only used in the case that this module is used to store
+     *  balances.
+     */
+    get asV990(): TokensAccountsStorageV990 {
+        assert(this.isV990)
+        return this as any
+    }
 }
 
 /**
@@ -1325,6 +1510,32 @@ export interface TokensAccountsStorageV980 {
     getPairsPaged(pageSize: number, key1: Uint8Array, key2: v980.CurrencyId): AsyncIterable<[k: [Uint8Array, v980.CurrencyId], v: v980.Type_668][]>
 }
 
+/**
+ *  The balance of a token type under an account.
+ * 
+ *  NOTE: If the total is ever zero, decrease account ref account.
+ * 
+ *  NOTE: This is only used in the case that this module is used to store
+ *  balances.
+ */
+export interface TokensAccountsStorageV990 {
+    get(key1: Uint8Array, key2: v990.CurrencyId): Promise<v990.Type_713>
+    getAll(): Promise<v990.Type_713[]>
+    getMany(keys: [Uint8Array, v990.CurrencyId][]): Promise<v990.Type_713[]>
+    getKeys(): Promise<[Uint8Array, v990.CurrencyId][]>
+    getKeys(key1: Uint8Array): Promise<[Uint8Array, v990.CurrencyId][]>
+    getKeys(key1: Uint8Array, key2: v990.CurrencyId): Promise<[Uint8Array, v990.CurrencyId][]>
+    getKeysPaged(pageSize: number): AsyncIterable<[Uint8Array, v990.CurrencyId][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[Uint8Array, v990.CurrencyId][]>
+    getKeysPaged(pageSize: number, key1: Uint8Array, key2: v990.CurrencyId): AsyncIterable<[Uint8Array, v990.CurrencyId][]>
+    getPairs(): Promise<[k: [Uint8Array, v990.CurrencyId], v: v990.Type_713][]>
+    getPairs(key1: Uint8Array): Promise<[k: [Uint8Array, v990.CurrencyId], v: v990.Type_713][]>
+    getPairs(key1: Uint8Array, key2: v990.CurrencyId): Promise<[k: [Uint8Array, v990.CurrencyId], v: v990.Type_713][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: [Uint8Array, v990.CurrencyId], v: v990.Type_713][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array): AsyncIterable<[k: [Uint8Array, v990.CurrencyId], v: v990.Type_713][]>
+    getPairsPaged(pageSize: number, key1: Uint8Array, key2: v990.CurrencyId): AsyncIterable<[k: [Uint8Array, v990.CurrencyId], v: v990.Type_713][]>
+}
+
 export class TokensTotalIssuanceStorage extends StorageBase {
     protected getPrefix() {
         return 'Tokens'
@@ -1451,6 +1662,21 @@ export class TokensTotalIssuanceStorage extends StorageBase {
      */
     get asV980(): TokensTotalIssuanceStorageV980 {
         assert(this.isV980)
+        return this as any
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get isV990(): boolean {
+        return this.getTypeHash() === '7a0803af8257493c160beec602ace1b30628dddefbe27a810a85069cb5ea809e'
+    }
+
+    /**
+     *  The total issuance of a token type.
+     */
+    get asV990(): TokensTotalIssuanceStorageV990 {
+        assert(this.isV990)
         return this as any
     }
 }
@@ -1589,6 +1815,23 @@ export interface TokensTotalIssuanceStorageV980 {
     getPairs(key: v980.CurrencyId): Promise<[k: v980.CurrencyId, v: bigint][]>
     getPairsPaged(pageSize: number): AsyncIterable<[k: v980.CurrencyId, v: bigint][]>
     getPairsPaged(pageSize: number, key: v980.CurrencyId): AsyncIterable<[k: v980.CurrencyId, v: bigint][]>
+}
+
+/**
+ *  The total issuance of a token type.
+ */
+export interface TokensTotalIssuanceStorageV990 {
+    get(key: v990.CurrencyId): Promise<bigint>
+    getAll(): Promise<bigint[]>
+    getMany(keys: v990.CurrencyId[]): Promise<bigint[]>
+    getKeys(): Promise<v990.CurrencyId[]>
+    getKeys(key: v990.CurrencyId): Promise<v990.CurrencyId[]>
+    getKeysPaged(pageSize: number): AsyncIterable<v990.CurrencyId[]>
+    getKeysPaged(pageSize: number, key: v990.CurrencyId): AsyncIterable<v990.CurrencyId[]>
+    getPairs(): Promise<[k: v990.CurrencyId, v: bigint][]>
+    getPairs(key: v990.CurrencyId): Promise<[k: v990.CurrencyId, v: bigint][]>
+    getPairsPaged(pageSize: number): AsyncIterable<[k: v990.CurrencyId, v: bigint][]>
+    getPairsPaged(pageSize: number, key: v990.CurrencyId): AsyncIterable<[k: v990.CurrencyId, v: bigint][]>
 }
 
 export class ZenlinkProtocolLiquidityPairsStorage extends StorageBase {

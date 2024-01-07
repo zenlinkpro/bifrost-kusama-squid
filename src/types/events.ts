@@ -10,6 +10,7 @@ import * as v944 from './v944'
 import * as v956 from './v956'
 import * as v962 from './v962'
 import * as v980 from './v980'
+import * as v990 from './v990'
 
 export class CurrenciesDepositedEvent {
     private readonly _chain: Chain
@@ -415,6 +416,15 @@ export class FarmingChargedEvent {
 
     get asV980(): {who: Uint8Array, pid: number, rewards: [v980.CurrencyId, bigint][]} {
         assert(this.isV980)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    get isV990(): boolean {
+        return this._chain.getEventHash('Farming.Charged') === '407d074f695317cd0c7517d007973e6a2e00310529842b84a0baa3896733fead'
+    }
+
+    get asV990(): {who: Uint8Array, pid: number, rewards: [v990.CurrencyId, bigint][]} {
+        assert(this.isV990)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -865,6 +875,21 @@ export class TokensBalanceSetEvent {
         assert(this.isV980)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * A balance was set by root.
+     */
+    get isV990(): boolean {
+        return this._chain.getEventHash('Tokens.BalanceSet') === '400ec07395e88ba2698ab37756f2cfe88946bc4fdaec0b7b4bd688f43085943e'
+    }
+
+    /**
+     * A balance was set by root.
+     */
+    get asV990(): {currencyId: v990.CurrencyId, who: Uint8Array, free: bigint, reserved: bigint} {
+        assert(this.isV990)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TokensDepositedEvent {
@@ -937,6 +962,21 @@ export class TokensDepositedEvent {
      */
     get asV980(): {currencyId: v980.CurrencyId, who: Uint8Array, amount: bigint} {
         assert(this.isV980)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Deposited some balance into an account
+     */
+    get isV990(): boolean {
+        return this._chain.getEventHash('Tokens.Deposited') === 'a82fdd1f61186cda6f5d5dbcccd9fcbeb9dbe427b892a13bb1c114bde29cb0c9'
+    }
+
+    /**
+     * Deposited some balance into an account
+     */
+    get asV990(): {currencyId: v990.CurrencyId, who: Uint8Array, amount: bigint} {
+        assert(this.isV990)
         return this._chain.decodeEvent(this.event)
     }
 }
@@ -1088,6 +1128,21 @@ export class TokensTransferEvent {
         assert(this.isV980)
         return this._chain.decodeEvent(this.event)
     }
+
+    /**
+     * Transfer succeeded.
+     */
+    get isV990(): boolean {
+        return this._chain.getEventHash('Tokens.Transfer') === 'eb54f4568f527c46e89549aec5cec82ad86a9e3cb43296671be8c3c8e8062f4d'
+    }
+
+    /**
+     * Transfer succeeded.
+     */
+    get asV990(): {currencyId: v990.CurrencyId, from: Uint8Array, to: Uint8Array, amount: bigint} {
+        assert(this.isV990)
+        return this._chain.decodeEvent(this.event)
+    }
 }
 
 export class TokensWithdrawnEvent {
@@ -1160,6 +1215,21 @@ export class TokensWithdrawnEvent {
      */
     get asV980(): {currencyId: v980.CurrencyId, who: Uint8Array, amount: bigint} {
         assert(this.isV980)
+        return this._chain.decodeEvent(this.event)
+    }
+
+    /**
+     * Some balances were withdrawn (e.g. pay for transaction fee)
+     */
+    get isV990(): boolean {
+        return this._chain.getEventHash('Tokens.Withdrawn') === 'a82fdd1f61186cda6f5d5dbcccd9fcbeb9dbe427b892a13bb1c114bde29cb0c9'
+    }
+
+    /**
+     * Some balances were withdrawn (e.g. pay for transaction fee)
+     */
+    get asV990(): {currencyId: v990.CurrencyId, who: Uint8Array, amount: bigint} {
+        assert(this.isV990)
         return this._chain.decodeEvent(this.event)
     }
 }
