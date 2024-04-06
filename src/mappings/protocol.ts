@@ -2,13 +2,6 @@ import { getPair } from "../entities/pair";
 import { getFactory, getTransaction, getZLKInfo } from "../entities/utils";
 import { Big as BigDecimal } from 'big.js'
 import { Bundle, Burn, Mint, Pair, Swap, Transaction, User } from "../model";
-import { EventHandlerContext } from "../types";
-import {
-  ZenlinkProtocolAssetSwapEvent,
-  ZenlinkProtocolLiquidityAddedEvent,
-  ZenlinkProtocolLiquidityRemovedEvent,
-  TokensBalanceSetEvent
-} from "../types/events";
 import { convertTokenToDecimal } from "../utils/helpers";
 import { sortAssets } from "../utils/sort";
 import {
@@ -31,8 +24,11 @@ import {
   updateZenlinkInfo
 } from "../utils/updates";
 import { getOrCreateToken } from "../entities/token";
+import { EventContext } from "../processor";
+import { assetSwap, liquidityAdded, liquidityRemoved } from "../types/zenlink-protocol/events";
+import { balanceSet } from "../types/tokens/events";
 
-export async function handleLiquiditySync(ctx: EventHandlerContext, pair: Pair) {
+export async function handleLiquiditySync(ctx: EventContext, pair: Pair) {
   const bundle = (await ctx.store.get(Bundle, '1'))!
   const factory = (await getFactory(ctx))!
   const { token0, token1 } = pair
@@ -130,7 +126,7 @@ export async function handleLiquiditySync(ctx: EventHandlerContext, pair: Pair) 
   await ctx.store.save([token0, token1])
 }
 
-export async function handleLiquidityAdded(ctx: EventHandlerContext) {
+export async function handleLiquidityAdded(ctx: EventContext) {
   const txHash = ctx.event.extrinsic?.hash
   if (!txHash) return
   const transaction = await ctx.store.get(Transaction, txHash)
@@ -140,9 +136,9 @@ export async function handleLiquidityAdded(ctx: EventHandlerContext) {
   if (!mints.length) return
   const mint = await ctx.store.get(Mint, mints[mints.length - 1])
   if (!mint) return
-  const _event = new ZenlinkProtocolLiquidityAddedEvent(ctx, ctx.event)
-  if (_event.isV902) return
-  const event = _event.asV906
+
+  if (!liquidityAdded.v906.is(ctx.event)) return
+  const event = liquidityAdded.v906.decode(ctx.event)
 
   const [asset0, asset1] = sortAssets([event[1], event[2]])
 
@@ -178,7 +174,7 @@ export async function handleLiquidityAdded(ctx: EventHandlerContext) {
   mint.sender = codec(config.prefix).encode(event[0])
   mint.amount0 = token0Amount.toFixed(6)
   mint.amount1 = token1Amount.toFixed(6)
-  mint.logIndex = ctx.event.indexInBlock
+  mint.logIndex = ctx.event.index
   mint.amountUSD = amountTotalUSD.toFixed(6)
   await ctx.store.save(mint)
 
@@ -195,7 +191,7 @@ export async function handleLiquidityAdded(ctx: EventHandlerContext) {
   await updateTokenDayData(ctx, token1)
 }
 
-export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
+export async function handleLiquidityRemoved(ctx: EventContext) {
   const txHash = ctx.event.extrinsic?.hash
   if (!txHash) return
   const transaction = await ctx.store.get(Transaction, txHash)
@@ -204,9 +200,8 @@ export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
   if (!burns.length) return
   const burn = await ctx.store.get(Burn, burns[burns.length - 1])
   if (!burn) return
-  const _event = new ZenlinkProtocolLiquidityRemovedEvent(ctx, ctx.event)
-  if (_event.isV902) return
-  const event = _event.asV906
+  if (!liquidityRemoved.v906.is(ctx.event)) return
+  const event = liquidityRemoved.v906.decode(ctx.event)
 
   const [asset0, asset1] = sortAssets([event[2], event[3]])
 
@@ -259,7 +254,7 @@ export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
   burn.to = to
   burn.amount0 = token0Amount.toFixed(6)
   burn.amount1 = token1Amount.toFixed(6)
-  burn.logIndex = ctx.event.indexInBlock
+  burn.logIndex = ctx.event.index
   burn.amountUSD = amountTotalUSD.toFixed(6)
   await ctx.store.save(burn)
 
@@ -275,12 +270,11 @@ export async function handleLiquidityRemoved(ctx: EventHandlerContext) {
   await updateTokenDayData(ctx, token1)
 }
 
-export async function handleAssetSwap(ctx: EventHandlerContext) {
+export async function handleAssetSwap(ctx: EventContext) {
   const txHash = ctx.event.extrinsic?.hash
   if (!txHash) return
-  const _event = new ZenlinkProtocolAssetSwapEvent(ctx, ctx.event)
-  if (_event.isV902) return
-  const event = _event.asV906
+  if (!assetSwap.v906.is(ctx.event)) return
+  const event = assetSwap.v906.decode(ctx.event)
   const path = event[2]
   const amounts = event[3]
   const sender = codec(config.prefix).encode(event[0])
@@ -395,7 +389,7 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
       transaction = new Transaction({
         id: txHash,
         blockNumber: BigInt(ctx.block.height),
-        timestamp: new Date(ctx.block.timestamp),
+        timestamp: new Date(ctx.block.timestamp!),
         mints: [],
         swaps: [],
         burns: [],
@@ -411,7 +405,7 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
       id: swapId,
       transaction,
       pair,
-      timestamp: new Date(ctx.block.timestamp),
+      timestamp: new Date(ctx.block.timestamp!),
       amount0In: amount0In.toFixed(6),
       amount1In: amount1In.toFixed(6),
       amount0Out: amount0Out.toFixed(6),
@@ -419,7 +413,7 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
       sender: sender.toLowerCase(),
       from: sender.toLowerCase(),
       to: to.toLowerCase(),
-      logIndex: ctx.event.indexInBlock,
+      logIndex: ctx.event.index,
       amountUSD: trackedAmountUSD.eq(ZERO_BD)
         ? derivedAmountUSD.toFixed(6)
         : trackedAmountUSD.toFixed(6),
@@ -475,30 +469,45 @@ export async function handleAssetSwap(ctx: EventHandlerContext) {
   }
 }
 
-export async function handleTokensBalanceSet(ctx: EventHandlerContext) {
+export async function handleTokensBalanceSet(ctx: EventContext) {
   let event;
 
-  const _event = new TokensBalanceSetEvent(ctx, ctx.event)
-  if (_event.isV802) {
-    event = { currencyId: _event.asV802[0], who: _event.asV802[1], free: _event.asV802[2], reserved: _event.asV802[3] }
-  } else if (_event.isV906) {
-    event = { currencyId: _event.asV906[0], who: _event.asV906[1], free: _event.asV906[2], reserved: _event.asV906[3] }
-  } else if (_event.isV916) {
-    event = { currencyId: _event.asV916[0], who: _event.asV916[1], free: _event.asV916[2], reserved: _event.asV916[3] }
-  } else if (_event.isV920) {
-    event = { currencyId: _event.asV920[0], who: _event.asV920[1], free: _event.asV920[2], reserved: _event.asV920[3] }
-  } else if (_event.isV925) {
-    event = _event.asV925
-  } else if (_event.isV932) {
-    event = _event.asV932
-  } else if (_event.isV956) {
-    event = _event.asV956
-  } else if (_event.isV962) {
-    event = _event.asV962
-  } else if (_event.isV980) {
-    event = _event.asV980
-  } else if (_event.isV990) {
-    event = _event.asV990
+  if (balanceSet.v802.is(ctx.event)) {
+    const [currencyId, who, free, reserved] = balanceSet.v802.decode(ctx.event)
+    event = { currencyId, who, free, reserved }
+  }
+  else if (balanceSet.v906.is(ctx.event)) {
+    const [currencyId, who, free, reserved] = balanceSet.v906.decode(ctx.event)
+    event = { currencyId, who, free, reserved }
+  }
+  else if (balanceSet.v916.is(ctx.event)) {
+    const [currencyId, who, free, reserved] = balanceSet.v916.decode(ctx.event)
+    event = { currencyId, who, free, reserved }
+  }
+  else if (balanceSet.v920.is(ctx.event)) {
+    const [currencyId, who, free, reserved] = balanceSet.v920.decode(ctx.event)
+    event = { currencyId, who, free, reserved }
+  }
+  else if (balanceSet.v925.is(ctx.event)) {
+    event = balanceSet.v925.decode(ctx.event)
+  }
+  else if (balanceSet.v932.is(ctx.event)) {
+    event = balanceSet.v932.decode(ctx.event)
+  }
+  else if (balanceSet.v956.is(ctx.event)) {
+    event = balanceSet.v956.decode(ctx.event)
+  }
+  else if (balanceSet.v962.is(ctx.event)) {
+    event = balanceSet.v962.decode(ctx.event)
+  }
+  else if (balanceSet.v980.is(ctx.event)) {
+    event = balanceSet.v980.decode(ctx.event)
+  }
+  else if (balanceSet.v990.is(ctx.event)) {
+    event = balanceSet.v990.decode(ctx.event)
+  }
+  else {
+    throw new Error('Unsupported spec')
   }
 
   if (
@@ -508,7 +517,7 @@ export async function handleTokensBalanceSet(ctx: EventHandlerContext) {
     const burnZLKAmount = await getTokenBurned(ctx, event.currencyId, event.who) ?? 0n;
     const zlkInfo = await getZLKInfo(ctx);
     zlkInfo.burn = zlkInfo.burn + burnZLKAmount;
-    zlkInfo.updatedDate = new Date(ctx.block.timestamp)
+    zlkInfo.updatedDate = new Date(ctx.block.timestamp!)
     await ctx.store.save(zlkInfo)
   }
 }

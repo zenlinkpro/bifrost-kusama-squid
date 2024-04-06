@@ -1,12 +1,11 @@
 import { decode } from "@subsquid/ss58"
 import { getStakePosition } from "../../entities/farming"
-import { getPosition } from "../../entities/utils"
 import { Farm, SingleTokenLock, SingleTokenLockDayData, SingleTokenLockHourData, StakePosition, User } from "../../model"
-import { EventHandlerContext } from "../../types"
 import { getFamingSharesAndWithdrawnRewards } from "../../utils/farming"
+import { EventContext } from "../../processor"
 
 export async function updateStakePosition(
-  ctx: EventHandlerContext,
+  ctx: EventContext,
   farm: Farm,
   user: User
 ): Promise<StakePosition> {
@@ -29,9 +28,9 @@ export async function updateStakePosition(
 }
 
 
-export async function updateSingleTokenLockHourData(ctx: EventHandlerContext, singleTokenLock: SingleTokenLock): Promise<SingleTokenLockHourData> {
+export async function updateSingleTokenLockHourData(ctx: EventContext, singleTokenLock: SingleTokenLock): Promise<SingleTokenLockHourData> {
   const { timestamp } = ctx.block
-  const hourIndex = parseInt((timestamp / 3600000).toString(), 10)
+  const hourIndex = parseInt((timestamp! / 3600000).toString(), 10)
   const hourStartUnix = Number(hourIndex) * 3600000
   const dayPairID = `${singleTokenLock.id as string}-${hourIndex}`
   let hourData = await ctx.store.get(SingleTokenLockHourData, dayPairID)
@@ -53,9 +52,9 @@ export async function updateSingleTokenLockHourData(ctx: EventHandlerContext, si
 }
 
 
-export async function updateSingleTokenLockDayData(ctx: EventHandlerContext, singleTokenLock: SingleTokenLock): Promise<SingleTokenLockDayData> {
+export async function updateSingleTokenLockDayData(ctx: EventContext, singleTokenLock: SingleTokenLock): Promise<SingleTokenLockDayData> {
   const { timestamp } = ctx.block
-  const dayID = parseInt((timestamp / 86400000).toString(), 10)
+  const dayID = parseInt((timestamp! / 86400000).toString(), 10)
   const dayStartTimestamp = Number(dayID) * 86400000
   const dayPairID = `${singleTokenLock.id as string}-${dayID}`
   let dayData = await ctx.store.get(SingleTokenLockDayData, dayPairID)

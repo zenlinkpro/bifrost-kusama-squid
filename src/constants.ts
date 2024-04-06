@@ -1,7 +1,7 @@
 import { TokenBase } from "./types";
 import { Big as BigDecimal } from 'big.js'
-import { AssetId } from "./types/v906";
 import { zenlinkAssetIdToCurrencyId } from "./utils/token";
+import { AssetId } from "./types/v906";
 
 export const CHAIN_NODE = process.env.BIFROST_KUSAMA_CHAIN_NODE || 'wss://bifrost-rpc.dwellir.com'
 

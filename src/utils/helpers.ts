@@ -1,8 +1,8 @@
 import { Big as BigDecimal } from 'big.js'
 import { ZERO_BD } from '../constants'
 import { LiquidityPosition, Pair, User } from '../model'
-import { EventHandlerContext } from '../types'
-import { SystemBlockHashStorage, TimestampNowStorage } from '../types/storage'
+import { EventContext } from '../processor'
+
 interface LiquidityPositionData {
   pair: Pair
   user: User
@@ -39,19 +39,19 @@ const BLOCK_RECORD = {
   }
 }
 
-export async function getTimePerBlock(ctx: EventHandlerContext) {
+export async function getTimePerBlock(ctx: EventContext) {
 
-  if(BLOCK_RECORD.pre.blockHeight === 0 ){
+  if (BLOCK_RECORD.pre.blockHeight === 0) {
     BLOCK_RECORD.pre.blockHeight = ctx.block.height
-    BLOCK_RECORD.pre.timestamp = ctx.block.timestamp
+    BLOCK_RECORD.pre.timestamp = ctx.block.timestamp!
 
     BLOCK_RECORD.middle.blockHeight = ctx.block.height
-    BLOCK_RECORD.middle.timestamp = ctx.block.timestamp
+    BLOCK_RECORD.middle.timestamp = ctx.block.timestamp!
 
   }
 
   BLOCK_RECORD.cur.blockHeight = ctx.block.height
-  BLOCK_RECORD.cur.timestamp = ctx.block.timestamp
+  BLOCK_RECORD.cur.timestamp = ctx.block.timestamp!
 
 
   const blockDiff = BLOCK_RECORD.cur.blockHeight - BLOCK_RECORD.pre.blockHeight;
@@ -59,12 +59,12 @@ export async function getTimePerBlock(ctx: EventHandlerContext) {
   const blockMidDiff = BLOCK_RECORD.cur.blockHeight - BLOCK_RECORD.middle.blockHeight;
 
 
-  if(blockDiff > 10000 && blockMidDiff > 5000){
+  if (blockDiff > 10000 && blockMidDiff > 5000) {
     BLOCK_RECORD.pre.blockHeight = BLOCK_RECORD.middle.blockHeight
     BLOCK_RECORD.pre.timestamp = BLOCK_RECORD.middle.timestamp
 
     BLOCK_RECORD.middle.blockHeight = ctx.block.height
-    BLOCK_RECORD.middle.timestamp = ctx.block.timestamp
+    BLOCK_RECORD.middle.timestamp = ctx.block.timestamp!
   }
 
 
@@ -75,8 +75,8 @@ export async function getTimePerBlock(ctx: EventHandlerContext) {
 
   const averageBlock = (currentTimestamp - anchorTimestamp) / blocks
 
-  if(blocks <= 0) return 12000
+  if (blocks <= 0) return 12000
 
   return averageBlock
- 
+
 }

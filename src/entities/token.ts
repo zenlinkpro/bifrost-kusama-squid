@@ -1,41 +1,47 @@
 import { TOKEN_METADATA_MAP, ZERO_BD } from "../constants";
 import { Token } from "../model";
-import { EventHandlerContext } from "../types";
-import { AssetRegistryCurrencyMetadatasStorage } from "../types/storage";
-import { AssetId } from "../types/v906";
 import { addressFromAsset, getTotalIssuance, u8a2s, zenlinkAssetIdToCurrencyId } from "../utils/token";
 import * as v956 from '../types/v956'
 import * as v962 from '../types/v962'
 import * as v980 from '../types/v980'
 import * as v990 from '../types/v990'
+import { EventContext } from "../processor";
+import {currencyMetadatas} from "../types/asset-registry/storage"
+import { decodeHex } from "@subsquid/substrate-processor";
+import { AssetId } from "../types/v906";
 
-export async function getOrCreateToken(ctx: EventHandlerContext, asset: AssetId): Promise<Token | undefined> {
+export async function getOrCreateToken(ctx: EventContext, asset: AssetId): Promise<Token | undefined> {
   const address = addressFromAsset(asset)
   let token = await ctx.store.get(Token, address)
 
   if (!token) {
-    const metadataStorage = new AssetRegistryCurrencyMetadatasStorage(ctx, ctx.block)
     let metaddata
 
-    if (!metadataStorage.isExists) {
+    if (!!TOKEN_METADATA_MAP[address]) {
       metaddata = TOKEN_METADATA_MAP[address]
     } else {
       const currencyId = zenlinkAssetIdToCurrencyId(asset)
       let result
-      if (metadataStorage.isV956) {
-        result = await metadataStorage.asV956.get(currencyId as v956.CurrencyId)
-      } else if (metadataStorage.isV962) {
-        result = await metadataStorage.asV962.get(currencyId as v962.CurrencyId)
-      } else if (metadataStorage.isV980) {
-        result = await metadataStorage.asV980.get(currencyId as v980.CurrencyId)
-      } else if (metadataStorage.isV990) {
-        result = await metadataStorage.asV990.get(currencyId as v990.CurrencyId)
+      if (currencyMetadatas.v956.is(ctx.block)) {
+        result = await currencyMetadatas.v956.get(ctx.block, currencyId as v956.CurrencyId)
+      } 
+      else if (currencyMetadatas.v962.is(ctx.block)) {
+        result = await currencyMetadatas.v962.get(ctx.block, currencyId as v962.CurrencyId)
+      } 
+      else if (currencyMetadatas.v980.is(ctx.block)) {
+        result = await currencyMetadatas.v980.get(ctx.block, currencyId as v980.CurrencyId)
+      } 
+      else if (currencyMetadatas.v990.is(ctx.block)) {
+        result = await currencyMetadatas.v990.get(ctx.block, currencyId as v990.CurrencyId)
+      } 
+      else {
+        throw new Error('Unsupported spec')
       }
-
+      
       if (result) {
         metaddata = {
-          symbol: u8a2s(result.symbol),
-          name: u8a2s(result.name),
+          symbol: u8a2s(decodeHex(result.symbol)),
+          name: u8a2s(decodeHex(result.name)),
           decimals: result.decimals
         }
       }
