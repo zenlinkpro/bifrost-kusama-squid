@@ -1,5 +1,21 @@
 import {sts, Result, Option, Bytes, BitSequence} from './support'
 
+export interface TimestampedValue {
+    value: FixedU128
+    timestamp: bigint
+}
+
+export type FixedU128 = bigint
+
+export const TimestampedValue: sts.Type<TimestampedValue> = sts.struct(() => {
+    return  {
+        value: FixedU128,
+        timestamp: sts.bigint(),
+    }
+})
+
+export const FixedU128 = sts.bigint()
+
 export interface AssetMetadata {
     name: Bytes
     symbol: Bytes

@@ -86,6 +86,9 @@ export function formatFarmingChargedEvent(ctx: EventContext) {
   else if (charged.v990.is(ctx.event)) {
     event = charged.v990.decode(ctx.event)
   }
+  else if (charged.v10000.is(ctx.event)) {
+    event = charged.v10000.decode(ctx.event)
+  }
   return event;
 }
 

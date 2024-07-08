@@ -5,6 +5,7 @@ import * as v956 from '../v956'
 import * as v962 from '../v962'
 import * as v980 from '../v980'
 import * as v990 from '../v990'
+import * as v10000 from '../v10000'
 
 export const farmingPoolCreated =  {
     name: 'Farming.FarmingPoolCreated',
@@ -96,6 +97,15 @@ export const charged =  {
             who: v990.AccountId32,
             pid: sts.number(),
             rewards: sts.array(() => sts.tuple(() => [v990.CurrencyId, sts.bigint()])),
+        })
+    ),
+    v10000: new EventType(
+        'Farming.Charged',
+        sts.struct({
+            who: v10000.AccountId32,
+            pid: sts.number(),
+            rewards: sts.array(() => sts.tuple(() => [v10000.CurrencyId, sts.bigint()])),
+            ifGauge: sts.boolean(),
         })
     ),
 }

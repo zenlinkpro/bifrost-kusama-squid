@@ -5,6 +5,7 @@ import { getOrCreateToken } from '../entities/token'
 import { Pair } from '../model'
 import { assetIdFromAddress } from './token'
 import { EventContext } from '../processor'
+import { oracle } from '../types/storage'
 
 export const WNATIVE = '2001-0-0'
 export const USDC = '2001-2-2048'
@@ -25,7 +26,20 @@ export const MINIMUM_USD_THRESHOLD_NEW_PAIRS = new BigDecimal(1000)
 // minimum liquidity for price to get tracked
 export const MINIMUM_LIQUIDITY_THRESHOLD_ETH = new BigDecimal(5)
 
+export async function getBundlePriceFromStorage(ctx: EventContext) {
+  const oracleStorage = oracle.values.v990
+  if (!oracleStorage.is(ctx.block)) return undefined
+  const price = await oracleStorage.get(ctx.block, { __kind: 'Native', value: { __kind: 'BNC' } })
+  if (!price) return undefined
+  return Number(price.value / BigInt(1e18))
+}
+
 export async function getEthPriceInUSD(ctx: EventContext): Promise<BigDecimal> {
+  const oraclePrice = await getBundlePriceFromStorage(ctx)
+  if (oraclePrice) {
+    return BigDecimal(oraclePrice)
+  }
+
   const usdcPair = await getPair(ctx, [assetIdFromAddress(WNATIVE), assetIdFromAddress(USDC)])
   if (usdcPair) {
     return usdcPair.token0.id === USDC
